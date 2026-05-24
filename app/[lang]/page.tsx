@@ -37,38 +37,66 @@ export default function LandingPage({ params }: { params: { lang: Lang } }) {
 
   return (
     <main className="mx-auto max-w-6xl px-4 pb-20">
-      {/* HERO */}
-        <section className="relative mt-6 overflow-hidden rounded-3xl border border-ink-100 bg-gradient-to-br from-emerald-50 via-white to-amber-50 px-6 py-16 dark:border-ink-800 dark:from-emerald-950/40 dark:via-ink-900 dark:to-amber-950/30 sm:px-12">
-          <div className="absolute -right-10 -top-10 h-48 w-48 rounded-full bg-emerald-200/40 blur-3xl dark:bg-emerald-700/20" />
-          <div className="absolute -bottom-12 -left-12 h-56 w-56 rounded-full bg-amber-200/40 blur-3xl dark:bg-amber-700/20" />
+      {/* HERO — Islamic-themed: deep emerald + gold + 8-pointed star pattern */}
+        <section className="relative mt-6 overflow-hidden rounded-3xl border border-islam-200 bg-gradient-to-br from-islam-50 via-sand-50 to-gold-50 px-6 py-16 dark:border-islam-800/60 dark:from-islam-950/60 dark:via-ink-900 dark:to-gold-950/40 sm:px-12">
+          {/* Islamic 8-pointed-star pattern overlay */}
+          <div className="bg-islamic-stars absolute inset-0 opacity-60" aria-hidden="true" />
+          {/* Soft color blobs */}
+          <div className="absolute -right-10 -top-10 h-56 w-56 rounded-full bg-islam-300/50 blur-3xl dark:bg-islam-700/30" aria-hidden="true" />
+          <div className="absolute -bottom-12 -left-12 h-64 w-64 rounded-full bg-gold-300/40 blur-3xl dark:bg-gold-700/30" aria-hidden="true" />
+
           <div className="relative">
-            <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-emerald-100/80 px-3 py-1 text-xs font-medium text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+            {/* Arabic greeting — top-of-fold, calligraphic */}
+            <div className="mb-5 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+              <span
+                className="font-arabic text-2xl font-medium text-islam-700 dark:text-islam-300 sm:text-3xl"
+                dir="rtl"
+                lang="ar"
+              >
+                {t("greeting_arabic", lang)}
+              </span>
+              {t("greeting_translit", lang) && (
+                <span className="text-xs font-medium text-islam-700/80 dark:text-islam-400">
+                  {t("greeting_translit", lang)}
+                </span>
+              )}
+              <span className="text-xs muted">· {t("greeting_meaning", lang)}</span>
+            </div>
+
+            {/* Verified stat pill */}
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-islam-300 bg-white/80 px-3 py-1 text-xs font-semibold text-islam-800 dark:border-islam-700 dark:bg-islam-950/40 dark:text-islam-300">
+              <span className="h-1.5 w-1.5 rounded-full bg-islam-500" />
               {bundle.total.toLocaleString()} verified places · avg Trust Score {bundle.avg_trust}
             </div>
-            <h1 className="text-4xl font-black tracking-tight sm:text-5xl">
-              {t("hero_title", lang)}
+
+            {/* Title — Salaam in gold, rest in deep emerald */}
+            <h1 className="text-4xl font-black tracking-tight text-islam-950 dark:text-islam-50 sm:text-6xl">
+              <span className="text-gradient-gold">Salaam</span>{" "}
+              <span>Thailand.</span>
+              <br />
+              <span className="text-3xl sm:text-5xl">{t("hero_title", lang).replace(/^Salaam Thailand\.\s*/i, "").replace(/^[^.]+\.\s*/, "")}</span>
             </h1>
-            <p className="mt-4 max-w-2xl text-lg muted">
+
+            <p className="mt-5 max-w-2xl text-base font-medium text-ink-800 dark:text-ink-200 sm:text-lg">
               {t("hero_subtitle", lang)}
             </p>
-            <p className="mt-2 text-sm font-medium text-ink-700 dark:text-ink-300">
-              {t("for_audience", lang)}
-            </p>
-            <p className="mt-3 text-xs muted">
+            <p className="mt-3 text-xs text-islam-800/70 dark:text-islam-400/80">
               {t("sources_pitch", lang)}
             </p>
 
-            <div className="mt-8 flex flex-wrap gap-3">
+            {/* Category quick links — gold-accent pills */}
+            <div className="mt-8 flex flex-wrap gap-2.5">
               {niches.map((n) => (
                 <Link
                   key={n}
-                  href={`/${lang}/c/${n}`}
-                  className="inline-flex items-center gap-2 rounded-full border border-ink-200 bg-white/80 px-4 py-2 text-sm font-medium backdrop-blur transition hover:border-emerald-400 hover:bg-emerald-50 dark:border-ink-700 dark:bg-ink-900/80 dark:hover:bg-emerald-900/30"
+                  href={`/${lang}/c/${n}/`}
+                  className="inline-flex items-center gap-2 rounded-full border border-islam-300/70 bg-white/90 px-4 py-2 text-sm font-semibold text-islam-900 backdrop-blur transition hover:-translate-y-0.5 hover:border-gold-400 hover:bg-gold-50 hover:shadow-md dark:border-islam-700/60 dark:bg-ink-900/80 dark:text-islam-100 dark:hover:border-gold-600 dark:hover:bg-gold-950/40"
                 >
-                  <span>{NICHE_META[n].emoji}</span>
+                  <span className="text-base">{NICHE_META[n].emoji}</span>
                   <span>{nicheName(n, lang)}</span>
-                  <span className="text-xs muted">({(bundle.by_niche as any)[n] ?? 0})</span>
+                  <span className="rounded-full bg-islam-100 px-1.5 text-xs font-bold text-islam-700 dark:bg-islam-900/60 dark:text-islam-300">
+                    {(bundle.by_niche as any)[n] ?? 0}
+                  </span>
                 </Link>
               ))}
             </div>

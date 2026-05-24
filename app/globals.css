@@ -82,3 +82,54 @@ body {
   background-size: 1000px 100%;
   animation: shimmer 2.5s linear infinite;
 }
+
+/* ===== Islamic / Muslim design tokens ===== */
+
+/* Eight-pointed star (khatam / rub-el-hizb) repeating background.
+   Tile size 80px. Very subtle by default — increase opacity inline if needed. */
+.bg-islamic-stars {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80'%3E%3Cpath d='M40 4 L48 32 L76 40 L48 48 L40 76 L32 48 L4 40 L32 32 Z' fill='none' stroke='%23047857' stroke-width='0.6' opacity='0.18'/%3E%3Cpath d='M40 14 L44 36 L66 40 L44 44 L40 66 L36 44 L14 40 L36 36 Z' fill='none' stroke='%23d4af37' stroke-width='0.5' opacity='0.18'/%3E%3C/svg%3E");
+  background-size: 80px 80px;
+}
+
+html.dark .bg-islamic-stars {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80'%3E%3Cpath d='M40 4 L48 32 L76 40 L48 48 L40 76 L32 48 L4 40 L32 32 Z' fill='none' stroke='%2334d399' stroke-width='0.6' opacity='0.16'/%3E%3Cpath d='M40 14 L44 36 L66 40 L44 44 L40 66 L36 44 L14 40 L36 36 Z' fill='none' stroke='%23efd472' stroke-width='0.5' opacity='0.16'/%3E%3C/svg%3E");
+}
+
+/* Arabesque / interlaced pattern — denser, for accent strips */
+.bg-arabesque {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'%3E%3Cg fill='none' stroke='%23047857' stroke-width='0.5' opacity='0.22'%3E%3Ccircle cx='30' cy='30' r='14'/%3E%3Ccircle cx='0' cy='30' r='14'/%3E%3Ccircle cx='60' cy='30' r='14'/%3E%3Ccircle cx='30' cy='0' r='14'/%3E%3Ccircle cx='30' cy='60' r='14'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 60px 60px;
+}
+
+/* Arabic typography helper */
+.font-arabic {
+  font-family: "Noto Sans Arabic", "Amiri", "Scheherazade New", serif;
+  font-feature-settings: "liga", "calt";
+}
+
+/* Gradient text for "Salaam" greeting */
+.text-gradient-gold {
+  background: linear-gradient(135deg, #d4af37 0%, #f6e6a8 50%, #b88c1d 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* Gentle dome curve — top border decoration */
+.dome-divider {
+  position: relative;
+}
+.dome-divider::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 32px;
+  height: 16px;
+  background: currentColor;
+  border-radius: 32px 32px 0 0;
+  opacity: 0.15;
+}

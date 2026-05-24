@@ -17,6 +17,24 @@ export const SITE = {
 } as const;
 
 export const T = {
+  // Islamic greeting (universal Arabic + transliteration + translation per lang)
+  greeting_arabic: {
+    en: "ٱلسَّلَامُ عَلَيْكُمْ", ko: "ٱلسَّلَامُ عَلَيْكُمْ", th: "ٱلسَّلَامُ عَلَيْكُمْ",
+    zh: "ٱلسَّلَامُ عَلَيْكُمْ", ja: "ٱلسَّلَامُ عَلَيْكُمْ", ar: "ٱلسَّلَامُ عَلَيْكُمْ",
+  },
+  greeting_translit: {
+    en: "Assalāmu ʿAlaykum", ko: "앗살라무 알라이쿰", th: "อัสซาลามู อะลัยกุม",
+    zh: "色兰 (Sàilán)", ja: "アッサラーム アライクム", ar: "",
+  },
+  greeting_meaning: {
+    en: "Peace be upon you",
+    ko: "당신에게 평화가 있기를",
+    th: "ขอความสันติจงประสบแด่ท่าน",
+    zh: "愿你平安",
+    ja: "あなたに平安あれ",
+    ar: "السلام عليكم",
+  },
+
   // navigation
   nav_explore: { en: "Explore", ko: "탐색", th: "สำรวจ", zh: "探索", ja: "探索", ar: "استكشف" },
   nav_about: { en: "About", ko: "소개", th: "เกี่ยวกับ", zh: "关于", ja: "概要", ar: "حول" },
