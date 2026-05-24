@@ -8,7 +8,7 @@ import { NICHE_META, nicheName, nicheTagline } from "@/lib/types";
 import CategoryClient from "@/components/CategoryClient";
 
 const NICHES: Niche[] = [
-  "muay-thai", "yoga-pilates", "wellness", "cooking", "diving", "spa", "coworking",
+  "halal-food", "muslim-hotel", "halal-tour", "mosque", "halal-clinic", "halal-beauty",
 ];
 
 export const dynamic = "force-static";
