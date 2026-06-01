@@ -33,8 +33,9 @@ const config: Config = {
         trust: { high: "#047857", mid: "#d4af37", low: "#ef4444" },
       },
       fontFamily: {
-        sans: ["Inter", "ui-sans-serif", "system-ui", "Noto Sans KR", "Noto Sans Thai", "Noto Sans Arabic", "sans-serif"],
-        arabic: ["Noto Sans Arabic", "Amiri", "Scheherazade New", "serif"],
+        sans: ["var(--font-inter)", "Inter", "ui-sans-serif", "system-ui", "Noto Sans KR", "Noto Sans Thai", "sans-serif"],
+        display: ["var(--font-playfair)", "Playfair Display", "Cormorant Garamond", "Georgia", "serif"],
+        arabic: ["var(--font-amiri)", "Amiri", "Noto Sans Arabic", "Scheherazade New", "serif"],
         mono: ["JetBrains Mono", "ui-monospace", "monospace"],
       },
       animation: {

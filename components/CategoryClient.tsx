@@ -2,9 +2,11 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import type { Lang, Niche, Place } from "@/lib/types";
+import type { Lang, Niche, PlaceLite } from "@/lib/types";
 import { NICHE_META } from "@/lib/types";
 import { t } from "@/lib/i18n";
+import PlacePhoto from "./PlacePhoto";
+import { QuoteCard, FactCard, DidYouKnowCard } from "./InterstitialCards";
 
 // nicheName is imported from lib/types when needed
 
@@ -29,7 +31,7 @@ export default function CategoryClient({
   lang,
   niche,
 }: {
-  places: Place[];
+  places: PlaceLite[];
   lang: Lang;
   niche: Niche;
 }) {
@@ -175,11 +177,31 @@ export default function CategoryClient({
         </div>
       ) : (
         <ul className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {filtered.map((p) => (
-            <li key={p.id}>
-              <PlaceCard p={p} lang={lang} fallbackEmoji={meta.emoji} />
-            </li>
-          ))}
+          {filtered.flatMap((p, i) => {
+            const items: React.ReactNode[] = [
+              <li key={p.id}>
+                <PlaceCard p={p} lang={lang} fallbackEmoji={meta.emoji} />
+              </li>,
+            ];
+            // Sprinkle editorial breaks between place cards so the grid never
+            // feels like a wall of identical placeholders. Cadence:
+            //   • every 7 cards  — Quote card (editor pull-quote)
+            //   • every 13 cards — Fact card (rotating stat)
+            //   • every 19 cards — Did You Know card (niche-specific tip)
+            // Only when there are enough cards to make the breaks feel earned.
+            if (filtered.length > 9) {
+              if ((i + 1) % 7 === 0 && i !== filtered.length - 1) {
+                items.push(<li key={`q-${i}`}><QuoteCard niche={niche} lang={lang} /></li>);
+              }
+              if ((i + 1) % 13 === 0 && i !== filtered.length - 1) {
+                items.push(<li key={`f-${i}`}><FactCard /></li>);
+              }
+              if ((i + 1) % 19 === 0 && i !== filtered.length - 1) {
+                items.push(<li key={`d-${i}`}><DidYouKnowCard niche={niche} /></li>);
+              }
+            }
+            return items;
+          })}
         </ul>
       )}
     </>
@@ -221,7 +243,7 @@ function Pill({ on, onClick, children, tone = "default" }: { on: boolean; onClic
   );
 }
 
-function PlaceCard({ p, lang, fallbackEmoji }: { p: Place; lang: Lang; fallbackEmoji: string }) {
+function PlaceCard({ p, lang, fallbackEmoji: _emoji }: { p: PlaceLite; lang: Lang; fallbackEmoji: string }) {
   const tier = trustTier(p.trust_score);
   const tierClass =
     tier === "high"
@@ -230,30 +252,27 @@ function PlaceCard({ p, lang, fallbackEmoji }: { p: Place; lang: Lang; fallbackE
       ? "bg-amber-500 text-white"
       : "bg-rose-500 text-white";
   const pbLabel = p.price_band !== "unknown" ? PB_LABEL[p.price_band as Exclude<PriceBand, "">] : null;
-
-  const hasAffiliate =
-    !!(p.affiliate.klook || p.affiliate.viator || p.affiliate.getyourguide || p.affiliate.agoda || p.affiliate.bookimed);
+  const hasAffiliate = p.has_affiliate;
 
   return (
     <Link
       href={`/${lang}/place/${p.slug}/`}
       className="group relative flex h-full flex-col gap-3 overflow-hidden rounded-2xl border border-ink-100 bg-white transition hover:-translate-y-0.5 hover:border-emerald-400 hover:shadow-lg dark:border-ink-800 dark:bg-ink-900"
     >
-      <div className="relative aspect-video w-full overflow-hidden bg-ink-50 dark:bg-ink-800">
-        {p.top_photo_url ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={p.top_photo_url} alt={p.name} className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]" loading="lazy" />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-emerald-50 to-amber-50 text-5xl dark:from-emerald-950/40 dark:to-amber-950/30">
-            {fallbackEmoji}
-          </div>
-        )}
-        <div className={`absolute right-2 top-2 inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-black tabular-nums shadow-sm ${tierClass}`}>
-          {p.trust_score}
-          <span className="text-[9px] font-semibold opacity-90">/100</span>
-        </div>
+      <div className="relative w-full">
+        <PlacePhoto
+          niche={p.niche}
+          name={p.name}
+          slug={p.slug}
+          trustScore={p.trust_score}
+          sourceCount={p.source_count}
+          halalSignals={p.halal_signals_detected}
+          languages={p.languages}
+          className="aspect-video"
+          rounded=""
+        />
         {p.is_partner && (
-          <div className="absolute left-2 top-2 rounded-md bg-violet-600 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-white">
+          <div className="absolute right-12 top-2 rounded-md bg-violet-600 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-white shadow-sm">
             ★ Partner
           </div>
         )}

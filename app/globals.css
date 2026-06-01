@@ -3,20 +3,27 @@
 @tailwind utilities;
 
 :root {
-  --bg: 247 248 250;
-  --bg-elev: 255 255 255;
-  --fg: 10 11 14;
-  --muted: 125 132 147;
-  --border: 214 217 224;
-  --accent: 14 165 233;
+  /* Editorial palette — Vogue Arabia × Booking trust */
+  --bg: 250 244 230;          /* sand cream */
+  --bg-elev: 255 255 255;     /* pure white card */
+  --fg: 2 44 34;              /* deepest emerald, almost black */
+  --muted: 122 130 124;
+  --border: 226 218 196;      /* sand 200 */
+  --accent: 184 140 29;       /* warm gold */
+  --accent-soft: 246 230 168; /* gold 200 */
+  --emerald: 4 120 87;        /* islam.600 */
+  --emerald-deep: 2 44 34;    /* islam.950 */
 }
 html.dark {
-  --bg: 5 6 8;
-  --bg-elev: 23 26 34;
-  --fg: 247 248 250;
-  --muted: 174 179 191;
-  --border: 39 44 56;
-  --accent: 56 189 248;
+  --bg: 6 14 11;
+  --bg-elev: 14 26 22;
+  --fg: 250 244 230;
+  --muted: 174 179 175;
+  --border: 39 56 50;
+  --accent: 212 175 55;
+  --accent-soft: 105 70 29;
+  --emerald: 52 211 153;
+  --emerald-deep: 6 78 59;
 }
 
 html { scroll-behavior: smooth; }
@@ -132,4 +139,102 @@ html.dark .bg-islamic-stars {
   background: currentColor;
   border-radius: 32px 32px 0 0;
   opacity: 0.15;
+}
+
+/* ===== Editorial typography (Vogue Arabia × Booking) ===== */
+
+.font-display {
+  font-family: var(--font-playfair), "Playfair Display", "Cormorant Garamond", Georgia, serif;
+  font-feature-settings: "liga", "calt", "kern";
+  letter-spacing: -0.012em;
+}
+
+/* Magazine-style oversized headline */
+.h-display {
+  font-family: var(--font-playfair), "Playfair Display", Georgia, serif;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 0.96;
+}
+
+/* Drop-cap for first paragraph of an article */
+.drop-cap::first-letter {
+  float: left;
+  font-family: var(--font-playfair), "Playfair Display", Georgia, serif;
+  font-size: 4.5em;
+  line-height: 0.85;
+  font-weight: 700;
+  margin-right: 0.12em;
+  margin-top: 0.04em;
+  color: rgb(var(--accent));
+}
+
+/* Eyebrow / kicker — uppercase tracking text above headlines */
+.eyebrow {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgb(var(--accent));
+}
+
+/* Editorial horizontal rule — gold center dot */
+.hr-editorial {
+  position: relative;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgb(var(--border)) 30%, rgb(var(--border)) 70%, transparent);
+  margin: 3rem 0;
+}
+.hr-editorial::after {
+  content: "✦";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgb(var(--bg));
+  padding: 0 0.5rem;
+  color: rgb(var(--accent));
+  font-size: 0.875rem;
+}
+
+/* Premium card — depth + subtle warmth */
+.card-editorial {
+  background: rgb(var(--bg-elev));
+  border: 1px solid rgb(var(--border) / 0.6);
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px rgb(2 44 34 / 0.04), 0 8px 24px -8px rgb(2 44 34 / 0.06);
+  transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+}
+.card-editorial:hover {
+  transform: translateY(-2px);
+  border-color: rgb(var(--accent) / 0.5);
+  box-shadow: 0 2px 6px rgb(2 44 34 / 0.06), 0 16px 36px -10px rgb(2 44 34 / 0.12);
+}
+
+/* Trust badge — verified mark with gold ring */
+.trust-mark {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.7rem 0.35rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  background: rgb(var(--accent) / 0.1);
+  color: rgb(var(--accent));
+  border: 1px solid rgb(var(--accent) / 0.35);
+}
+
+/* Subtle gold underline on editorial links */
+.link-gold {
+  background-image: linear-gradient(rgb(var(--accent)), rgb(var(--accent)));
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  background-size: 100% 1px;
+  transition: background-size 200ms ease;
+}
+.link-gold:hover {
+  background-size: 100% 2px;
 }

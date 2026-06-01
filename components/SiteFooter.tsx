@@ -1,7 +1,19 @@
 import { SITE, t } from "@/lib/i18n";
-import type { Lang } from "@/lib/types";
+import type { Lang, Niche } from "@/lib/types";
 
-export default function SiteFooter({ lang }: { lang: Lang }) {
+const NICHE_PILLS: Array<{ slug: Niche; label: string }> = [
+  { slug: "halal-food",   label: "🥘 Halal Food" },
+  { slug: "muslim-hotel", label: "🏨 Muslim Hotels" },
+  { slug: "halal-tour",   label: "✈️ Halal Tours" },
+  { slug: "mosque",       label: "🕌 Mosques" },
+  { slug: "halal-clinic", label: "🏥 Clinics" },
+  { slug: "halal-beauty", label: "💄 Beauty" },
+];
+
+export default function SiteFooter({ lang, byNiche }: { lang: Lang; byNiche?: Record<Niche, number> }) {
+  const visiblePills = byNiche
+    ? NICHE_PILLS.filter((p) => (byNiche[p.slug] ?? 0) > 0)
+    : NICHE_PILLS;
   return (
     <footer className="relative mt-20 border-t border-islam-200 bg-gradient-to-b from-islam-50 to-white dark:border-islam-800/60 dark:from-islam-950/40 dark:to-ink-900">
       {/* Subtle Islamic pattern overlay */}
@@ -33,14 +45,28 @@ export default function SiteFooter({ lang }: { lang: Lang }) {
           </p>
         </div>
 
-        {/* Niche links — quick nav */}
-        <div className="mb-8 flex flex-wrap items-center justify-center gap-2 text-xs">
-          <a href={`/${lang}/c/halal-food/`}    className="rounded-full border border-islam-200 px-3 py-1 hover:border-gold-400 hover:bg-gold-50 dark:border-islam-700 dark:hover:bg-gold-950/40">🥘 Halal Food</a>
-          <a href={`/${lang}/c/muslim-hotel/`}  className="rounded-full border border-islam-200 px-3 py-1 hover:border-gold-400 hover:bg-gold-50 dark:border-islam-700 dark:hover:bg-gold-950/40">🏨 Muslim Hotels</a>
-          <a href={`/${lang}/c/halal-tour/`}    className="rounded-full border border-islam-200 px-3 py-1 hover:border-gold-400 hover:bg-gold-50 dark:border-islam-700 dark:hover:bg-gold-950/40">✈️ Halal Tours</a>
-          <a href={`/${lang}/c/mosque/`}        className="rounded-full border border-islam-200 px-3 py-1 hover:border-gold-400 hover:bg-gold-50 dark:border-islam-700 dark:hover:bg-gold-950/40">🕌 Mosques</a>
-          <a href={`/${lang}/c/halal-clinic/`}  className="rounded-full border border-islam-200 px-3 py-1 hover:border-gold-400 hover:bg-gold-50 dark:border-islam-700 dark:hover:bg-gold-950/40">🏥 Clinics</a>
-          <a href={`/${lang}/c/halal-beauty/`}  className="rounded-full border border-islam-200 px-3 py-1 hover:border-gold-400 hover:bg-gold-50 dark:border-islam-700 dark:hover:bg-gold-950/40">💄 Beauty</a>
+        {/* Niche links — only categories with data */}
+        {visiblePills.length > 0 && (
+          <div className="mb-8 flex flex-wrap items-center justify-center gap-2 text-xs">
+            {visiblePills.map((p) => (
+              <a
+                key={p.slug}
+                href={`/${lang}/c/${p.slug}/`}
+                className="rounded-full border border-islam-200 px-3 py-1 hover:border-gold-400 hover:bg-gold-50 dark:border-islam-700 dark:hover:bg-gold-950/40"
+              >
+                {p.label}
+              </a>
+            ))}
+          </div>
+        )}
+
+        {/* About / Why us / Search nav */}
+        <div className="mb-8 flex flex-wrap items-center justify-center gap-4 text-xs">
+          <a href={`/${lang}/search/`} className="link-gold font-semibold text-islam-800 dark:text-islam-200">🔍 Search</a>
+          <span className="text-ink-300 dark:text-ink-700">·</span>
+          <a href={`/${lang}/why-us/`} className="link-gold font-semibold text-islam-800 dark:text-islam-200">Why us</a>
+          <span className="text-ink-300 dark:text-ink-700">·</span>
+          <a href={`/${lang}/about/`} className="link-gold font-semibold text-islam-800 dark:text-islam-200">About</a>
         </div>
 
         {/* Closing Arabic greeting + copyright */}
