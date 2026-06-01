@@ -10,12 +10,42 @@ import path from "node:path";
 import { parse } from "csv-parse/sync";
 
 const SOURCES = [
-  { niche: "halal-food",    folder: "halalfood",    csv: "C:\\dbd-scraper\\halalfood\\thaihalalfood_master.csv",       relCols: ["halalfood_relevant", "is_halalfood_relevant"] },
-  { niche: "muslim-hotel",  folder: "muslimhotel",  csv: "C:\\dbd-scraper\\muslimhotel\\thaimuslimhotel_master.csv",   relCols: ["muslimhotel_relevant", "is_muslimhotel_relevant"] },
-  { niche: "halal-tour",    folder: "halaltour",    csv: "C:\\dbd-scraper\\halaltour\\thaihalaltour_master.csv",       relCols: ["halaltour_relevant", "is_halaltour_relevant"] },
-  { niche: "mosque",        folder: "mosque",       csv: "C:\\dbd-scraper\\mosque\\thaimosque_master.csv",             relCols: ["mosque_relevant", "is_mosque_relevant"] },
-  { niche: "halal-clinic",  folder: "halalclinic",  csv: "C:\\dbd-scraper\\halalclinic\\thaihalalclinic_master.csv",   relCols: ["halalclinic_relevant", "is_halalclinic_relevant"] },
-  { niche: "halal-beauty",  folder: "halalbeauty",  csv: "C:\\dbd-scraper\\halalbeauty\\thaihalalbeauty_master.csv",   relCols: ["halalbeauty_relevant", "is_halalbeauty_relevant"] },
+  { niche: "halal-food",          folder: "halalfood",          csv: "C:\\dbd-scraper\\halalfood\\thaihalalfood_master.csv",                   relCols: ["halalfood_relevant", "is_halalfood_relevant"] },
+  { niche: "muslim-hotel",        folder: "muslimhotel",        csv: "C:\\dbd-scraper\\muslimhotel\\thaimuslimhotel_master.csv",               relCols: ["muslimhotel_relevant", "is_muslimhotel_relevant"] },
+  { niche: "halal-tour",          folder: "halaltour",          csv: "C:\\dbd-scraper\\halaltour\\thaihalaltour_master.csv",                   relCols: ["halaltour_relevant", "is_halaltour_relevant"] },
+  { niche: "mosque",              folder: "mosque",             csv: "C:\\dbd-scraper\\mosque\\thaimosque_master.csv",                         relCols: ["mosque_relevant", "is_mosque_relevant"] },
+  { niche: "halal-clinic",        folder: "halalclinic",        csv: "C:\\dbd-scraper\\halalclinic\\thaihalalclinic_master.csv",               relCols: ["halalclinic_relevant", "is_halalclinic_relevant"] },
+  { niche: "halal-beauty",        folder: "halalbeauty",        csv: "C:\\dbd-scraper\\halalbeauty\\thaihalalbeauty_master.csv",               relCols: ["halalbeauty_relevant", "is_halalbeauty_relevant"] },
+  // 17 halal food sub-niches
+  { niche: "halal-arab",          folder: "halalarab",          csv: "C:\\dbd-scraper\\halalarab\\thaihalalarab_master.csv",                   relCols: ["halalarab_relevant", "is_halalarab_relevant"] },
+  { niche: "halal-bakery",        folder: "halalbakery",        csv: "C:\\dbd-scraper\\halalbakery\\thaihalalbakery_master.csv",               relCols: ["halalbakery_relevant", "is_halalbakery_relevant"] },
+  { niche: "halal-bbq",           folder: "halalbbq",           csv: "C:\\dbd-scraper\\halalbbq\\thaihalalbbq_master.csv",                     relCols: ["halalbbq_relevant", "is_halalbbq_relevant"] },
+  { niche: "halal-buffet",        folder: "halalbuffet",        csv: "C:\\dbd-scraper\\halalbuffet\\thaihalalbuffet_master.csv",               relCols: ["halalbuffet_relevant", "is_halalbuffet_relevant"] },
+  { niche: "halal-burger",        folder: "halalburger",        csv: "C:\\dbd-scraper\\halalburger\\thaihalalburger_master.csv",               relCols: ["halalburger_relevant", "is_halalburger_relevant"] },
+  { niche: "halal-cafe",          folder: "halalcafe",          csv: "C:\\dbd-scraper\\halalcafe\\thaihalalcafe_master.csv",                   relCols: ["halalcafe_relevant", "is_halalcafe_relevant"] },
+  { niche: "halal-cooking-class", folder: "halalcookingclass",  csv: "C:\\dbd-scraper\\halalcookingclass\\thaihalalcookingclass_master.csv",   relCols: ["halalcookingclass_relevant", "is_halalcookingclass_relevant"] },
+  { niche: "halal-grocery",       folder: "halalgrocery",       csv: "C:\\dbd-scraper\\halalgrocery\\thaihalalgrocery_master.csv",             relCols: ["halalgrocery_relevant", "is_halalgrocery_relevant"] },
+  { niche: "halal-indian",        folder: "halalindian",        csv: "C:\\dbd-scraper\\halalindian\\thaihalalindian_master.csv",               relCols: ["halalindian_relevant", "is_halalindian_relevant"] },
+  { niche: "halal-japanese",      folder: "halaljapanese",      csv: "C:\\dbd-scraper\\halaljapanese\\thaihalaljapanese_master.csv",           relCols: ["halaljapanese_relevant", "is_halaljapanese_relevant"] },
+  { niche: "halal-korean",        folder: "halalkorean",        csv: "C:\\dbd-scraper\\halalkorean\\thaihalalkorean_master.csv",               relCols: ["halalkorean_relevant", "is_halalkorean_relevant"] },
+  { niche: "halal-mediterranean", folder: "halalmediterranean", csv: "C:\\dbd-scraper\\halalmediterranean\\thaihalalmediterranean_master.csv", relCols: ["halalmediterranean_relevant", "is_halalmediterranean_relevant"] },
+  { niche: "halal-pizza",         folder: "halalpizza",         csv: "C:\\dbd-scraper\\halalpizza\\thaihalalpizza_master.csv",                 relCols: ["halalpizza_relevant", "is_halalpizza_relevant"] },
+  { niche: "halal-seafood",       folder: "halalseafood",       csv: "C:\\dbd-scraper\\halalseafood\\thaihalalseafood_master.csv",             relCols: ["halalseafood_relevant", "is_halalseafood_relevant"] },
+  { niche: "halal-shisha-cafe",   folder: "halalshishacafe",    csv: "C:\\dbd-scraper\\halalshishacafe\\thaihalalshishacafe_master.csv",       relCols: ["halalshishacafe_relevant", "is_halalshishacafe_relevant"] },
+  { niche: "halal-street-food",   folder: "halalstreetfood",    csv: "C:\\dbd-scraper\\halalstreetfood\\thaihalalstreetfood_master.csv",       relCols: ["halalstreetfood_relevant", "is_halalstreetfood_relevant"] },
+  { niche: "halal-thai",          folder: "halalthai",          csv: "C:\\dbd-scraper\\halalthai\\thaihalalthai_master.csv",                   relCols: ["halalthai_relevant", "is_halalthai_relevant"] },
+  // 11 muslim services
+  { niche: "halal-laundry",       folder: "halallaundry",       csv: "C:\\dbd-scraper\\halallaundry\\thaihalallaundry_master.csv",             relCols: ["halallaundry_relevant", "is_halallaundry_relevant"] },
+  { niche: "halal-pharmacy",      folder: "halalpharmacy",      csv: "C:\\dbd-scraper\\halalpharmacy\\thaihalalpharmacy_master.csv",           relCols: ["halalpharmacy_relevant", "is_halalpharmacy_relevant"] },
+  { niche: "iftar-buffet",        folder: "iftarbuffet",        csv: "C:\\dbd-scraper\\iftarbuffet\\thaiiftarbuffet_master.csv",               relCols: ["iftarbuffet_relevant", "is_iftarbuffet_relevant"] },
+  { niche: "modest-fashion",      folder: "modestfashion",      csv: "C:\\dbd-scraper\\modestfashion\\thaimodestfashion_master.csv",           relCols: ["modestfashion_relevant", "is_modestfashion_relevant"] },
+  { niche: "muslim-attractions",  folder: "muslimattractions",  csv: "C:\\dbd-scraper\\muslimattractions\\thaimuslimattractions_master.csv",   relCols: ["muslimattractions_relevant", "is_muslimattractions_relevant"] },
+  { niche: "muslim-driver",       folder: "muslimdriver",       csv: "C:\\dbd-scraper\\muslimdriver\\thaimuslimdriver_master.csv",             relCols: ["muslimdriver_relevant", "is_muslimdriver_relevant"] },
+  { niche: "muslim-friendly-spa", folder: "muslimfriendlyspa",  csv: "C:\\dbd-scraper\\muslimfriendlyspa\\thaimuslimfriendlyspa_master.csv",   relCols: ["muslimfriendlyspa_relevant", "is_muslimfriendlyspa_relevant"] },
+  { niche: "muslim-wedding",      folder: "muslimwedding",      csv: "C:\\dbd-scraper\\muslimwedding\\thaimuslimwedding_master.csv",           relCols: ["muslimwedding_relevant", "is_muslimwedding_relevant"] },
+  { niche: "prayer-room",         folder: "prayerroom",         csv: "C:\\dbd-scraper\\prayerroom\\thaiprayerroom_master.csv",                 relCols: ["prayerroom_relevant", "is_prayerroom_relevant"] },
+  { niche: "southern-muslim",     folder: "southernmuslim",     csv: "C:\\dbd-scraper\\southernmuslim\\thaisouthernmuslim_master.csv",         relCols: ["southernmuslim_relevant", "is_southernmuslim_relevant"] },
+  { niche: "arabic-school",       folder: "arabicschool",       csv: "C:\\dbd-scraper\\arabicschool\\thaiarabicschool_master.csv",             relCols: ["arabicschool_relevant", "is_arabicschool_relevant"] },
 ];
 
 const OUT_DIR = path.join(process.cwd(), "public", "data");

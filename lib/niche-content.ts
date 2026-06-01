@@ -18,7 +18,19 @@ export function ll(text: LocalText, lang: Lang): string {
   return text[lang] || text.en || "";
 }
 
-export const NICHE_GUIDES: Record<Niche, NicheGuide> = {
+// Fallback used when a niche has no curated wiki content yet. Pages render
+// without the intro/criteria/cities/FAQ blocks but still emit minimal schema.
+export const EMPTY_GUIDE: NicheGuide = {
+  intro: {},
+  criteria: [],
+  citySpotlights: [],
+  faqs: [],
+};
+
+// Partial: only the 6 original niches have curated wiki guides. New niches
+// (v6-v11 additions) fall back to the basic category page without an
+// editorial guide block — add entries here over time as content is written.
+export const NICHE_GUIDES: Partial<Record<Niche, NicheGuide>> = {
   // ============================================================
   "halal-food": {
     intro: {
@@ -26,6 +38,8 @@ export const NICHE_GUIDES: Record<Niche, NicheGuide> = {
       ko: "태국의 할랄 음식은 크게 두 흐름입니다. 공식 CICOT(태국이슬람중앙회) 인증 식당, 그리고 인도/파키스탄/중동/말레이/현대 퓨전 요리를 제공하는 자체 무슬림 친화 식당들입니다. 방콕의 수쿰빗 소이3(나나)와 차이나타운 인근 파둥다오가 가장 밀집된 할랄 핫스팟이며, 푸켓 타운, 끄라비, 핫야이도 현지 무슬림 인구 덕분에 할랄 씬이 강합니다. CICOT 마크는 단순한 '할랄' 표시보다 훨씬 엄격한 신호입니다 — 재료, 조리, 주방 구조까지 검증합니다.",
       ar: "تقدم تايلاند الطعام الحلال عبر تيارين متميزين: المطاعم المعتمدة التي تعرض ختم CICOT الرسمي (المجلس الإسلامي المركزي لتايلاند)، وعدد أكبر بكثير من الأماكن الصديقة للمسلمين التي تقدم المأكولات الهندية والباكستانية والشرق أوسطية والمالاوية. سوكومفيت سوي 3 (نانا) في بانكوك وفادونغداو حول الحي الصيني هي أكثف نقاط الحلال؛ بوكيت تاون وكرابي وهات ياي تركز أيضًا مشاهد حلال قوية. علامة CICOT إشارة أكثر صرامة من علامة 'حلال' عامة — فهي تشمل المكونات والتحضير وحتى تخطيط المطبخ.",
       th: "อาหารฮาลาลในไทยแบ่งเป็นสองสาย: ร้านที่ได้รับการรับรอง CICOT (สำนักงานคณะกรรมการกลางอิสลามแห่งประเทศไทย) อย่างเป็นทางการ และร้านมุสลิม-เฟรนด์ลีจำนวนมากที่ขายอาหารอินเดีย ปากีสถาน ตะวันออกกลาง มาเลย์ และฟิวชั่นสมัยใหม่ สุขุมวิทซอย 3 (นานา) และพาดุงดาวรอบไชน่าทาวน์ในกรุงเทพคือจุดศูนย์รวมฮาลาลที่หนาแน่นที่สุด ภูเก็ตทาวน์ กระบี่ และหาดใหญ่ก็มีร้านฮาลาลแน่นแฟ้นเช่นกัน",
+      zh: "泰国的清真餐厅分为两个独立流派:拥有官方 CICOT(泰国伊斯兰中央理事会)认证的餐厅,以及一群庞大的自我宣称穆斯林友好场所,提供印度、巴基斯坦、中东、马来和现代融合菜肴。曼谷的 Sukhumvit Soi 3(Nana)和唐人街附近的 Phadungdao 是最密集的清真热点;普吉镇、甲米和合艾因当地的穆斯林人口也聚集了强大的清真场景。",
+      ja: "タイのハラール料理は二つの異なる流れがあります:公式CICOT(タイ・イスラーム中央評議会)認証を表示するレストランと、インド、パキスタン、中東、マレー、モダンフュージョン料理を提供する自己申告ムスリムフレンドリーな店の大規模な集まりです。バンコクのスクンビット・ソイ3(ナナ)とチャイナタウン周辺のパドゥンダオが最も密集したハラール・ホットスポットです。プーケットタウン、クラビ、ハジャイにも地元のムスリム人口のおかげで強力なハラール・シーンが集中しています。",
     },
     criteria: [
       {
@@ -140,6 +154,9 @@ export const NICHE_GUIDES: Record<Niche, NicheGuide> = {
       en: "Muslim-friendly hotels in Thailand range from dedicated halal hotels (Al Meroz, Nasa Vegas) where every room faces qibla and the entire kitchen is CICOT-certified, to mainstream luxury chains (Anantara, Centara, Banyan Tree) offering muslim-friendly rooms with prayer mats, qibla indicators, and halal-on-request room service. The Crescent Rating system (an international muslim-tourism standard) classifies hotels from 1 to 7 — most listed properties on this guide are Crescent 5+ or self-verified equivalents.",
       ko: "태국의 무슬림 친화 호텔은 두 갈래입니다. 첫째, 모든 방이 키블라를 향하고 주방 전체가 CICOT 인증된 전용 할랄 호텔(Al Meroz, Nasa Vegas 등). 둘째, 기도매트/키블라 표시/룸서비스 할랄 옵션을 제공하는 메인스트림 럭셔리 체인(Anantara, Centara, Banyan Tree). Crescent Rating 시스템(국제 무슬림 관광 표준)이 호텔을 1~7등급으로 분류하며, 본 가이드의 대부분은 Crescent 5+ 수준입니다.",
       ar: "تتراوح الفنادق الصديقة للمسلمين في تايلاند من الفنادق الحلال المخصصة (Al Meroz، Nasa Vegas) حيث تواجه كل غرفة القبلة والمطبخ بأكمله معتمد من CICOT، إلى السلاسل الفاخرة الرئيسية (Anantara، Centara، Banyan Tree) التي تقدم غرفًا صديقة للمسلمين مع سجاد الصلاة ومؤشرات القبلة والحلال عند الطلب.",
+      th: "โรงแรมมุสลิม-เฟรนด์ลีในไทยมีตั้งแต่โรงแรมฮาลาลโดยเฉพาะ (Al Meroz, Nasa Vegas) ที่ทุกห้องหันไปทางกิบลัตและครัวทั้งหมดได้รับการรับรอง CICOT ไปจนถึงเชนหรู (Anantara, Centara, Banyan Tree) ที่ให้บริการห้องมุสลิม-เฟรนด์ลีพร้อมสวดมนต์, เข็มทิศกิบลัต และอาหารฮาลาลตามคำขอ ระบบ Crescent Rating จัดอันดับโรงแรมตั้งแต่ 1 ถึง 7",
+      zh: "泰国的穆斯林友好酒店分为两大类:专用清真酒店(Al Meroz, Nasa Vegas)每个房间都朝向麦加方向,整个厨房都获得 CICOT 认证;以及主流豪华连锁(Anantara, Centara, Banyan Tree),提供带祈祷垫、朝向指南和按需清真餐的穆斯林友好房间。Crescent Rating 系统将酒店分为 1 至 7 级。",
+      ja: "タイのムスリム・フレンドリー・ホテルは、すべての客室がキブラを向き、キッチン全体がCICOT認定の専用ハラール・ホテル(Al Meroz、Nasa Vegas)から、礼拝マット、キブラ方位、リクエストに応じたハラール・ルームサービスを提供する主流の高級チェーン(Anantara、Centara、Banyan Tree)まで様々です。クレセント・レーティング・システムは1〜7段階でホテルを分類します。",
     },
     criteria: [
       {
@@ -232,6 +249,10 @@ export const NICHE_GUIDES: Record<Niche, NicheGuide> = {
     intro: {
       en: "Halal-friendly tours in Thailand have surged 4× since 2022 as GCC, Malaysian, Indonesian, and Korean Muslim tourism grew. Operators now bundle private vehicles, halal meal stops, prayer breaks aligned with the day's salah times, and muslim-friendly accommodations. The core selling point is logistics: a regular Phi Phi day tour can leave you with no halal lunch options on the boat — a halal tour pre-coordinates this. Pricing runs 20–40% above standard tours because of the bespoke arrangement.",
       ko: "할랄 친화 투어는 2022년 이후 4배 증가했습니다 — GCC, 말레이시아, 인도네시아, 한국 무슬림 관광이 급성장했기 때문입니다. 사업자들은 전용 차량, 할랄 식사 정차, 살라트 시간에 맞춘 기도 휴식, 무슬림 친화 숙소를 패키지로 묶습니다. 핵심 가치는 로지스틱스 — 일반 피피섬 데이 투어에서는 할랄 점심 옵션이 없을 수 있는데, 할랄 투어는 이를 미리 조율합니다. 가격은 표준 투어보다 20–40% 높습니다.",
+      ar: "زادت الجولات الصديقة للحلال في تايلاند 4 مرات منذ 2022 مع نمو السياحة المسلمة من الخليج وماليزيا وإندونيسيا وكوريا. يقدم المشغلون الآن مركبات خاصة ومحطات وجبات حلال واستراحات صلاة متوافقة مع أوقات الصلاة وأماكن إقامة صديقة للمسلمين. السعر يزيد 20-40% عن الجولات العادية بسبب الترتيبات المخصصة.",
+      th: "ทัวร์ฮาลาล-เฟรนด์ลีในไทยเพิ่มขึ้น 4 เท่าตั้งแต่ปี 2022 เนื่องจากการเติบโตของการท่องเที่ยวมุสลิมจาก GCC, มาเลเซีย, อินโดนีเซีย และเกาหลี ผู้ประกอบการได้รวมรถส่วนตัว, จุดอาหารฮาลาล, การหยุดละหมาดตามเวลา, และที่พักมุสลิม-เฟรนด์ลี ราคาสูงกว่าทัวร์ทั่วไป 20-40%",
+      zh: "自 2022 年以来,泰国的清真友好旅游增长了 4 倍——海湾合作委员会国家、马来西亚、印度尼西亚和韩国的穆斯林旅游业蓬勃发展。运营商现在将私人车辆、清真餐停靠点、与每日礼拜时间对齐的祈祷休息和穆斯林友好住宿打包。价格比标准旅游高 20-40%。",
+      ja: "ハラール・フレンドリーなツアーはGCC、マレーシア、インドネシア、韓国のムスリム観光の成長により、2022年以降4倍に増加しました。事業者は専用車両、ハラール食事の立ち寄り、サラート時間に合わせた礼拝休憩、ムスリム・フレンドリーな宿泊施設をパッケージ化しています。価格は通常のツアーより20-40%高くなります。",
     },
     criteria: [
       {
@@ -319,6 +340,9 @@ export const NICHE_GUIDES: Record<Niche, NicheGuide> = {
       en: "Thailand has over 4,000 registered mosques. Bangkok alone hosts 180+ — concentrated in Klong Toey, Phra Khanong, Bang Rak (Haroon Mosque), Indra Square, and Bang Luang. The largest concentration nationally is in the four southern provinces — Pattani, Yala, Narathiwat, and Songkhla — where Muslims form the majority. Most mosques welcome non-Muslim visitors outside prayer times for respectful viewing. Friday prayer (Jum'ah) typically starts 12:30–13:00; arrive 30 min early.",
       ko: "태국에는 4,000개 이상의 등록된 모스크가 있습니다. 방콕만 180개 이상 — 끌롱또이, 프라카농, 방락(Haroon Mosque), 인드라 스퀘어, 방루앙에 밀집해 있습니다. 전국 최대 무슬림 인구가 있는 빠따니, 얄라, 나라티왓, 송클라 등 남부 4개 주에 가장 밀집합니다. 대부분 모스크는 예배 시간 외에는 비무슬림 방문자를 환영합니다 (정중한 복장 필수). 금요예배(주마)는 보통 12:30–13:00 시작 — 30분 일찍 도착 권장.",
       ar: "في تايلاند أكثر من 4,000 مسجد مسجل. بانكوك وحدها تضم أكثر من 180 — تتركز في كلونغ توي، فرا خانونغ، بانغ راك (مسجد هارون)، إندرا سكوير، وبانغ لوانغ. أكبر تركيز على المستوى الوطني هو في المقاطعات الجنوبية الأربع — فطاني، يالا، ناراثيوات، وسونغكلا — حيث يشكل المسلمون الأغلبية.",
+      th: "ไทยมีมัสยิดที่จดทะเบียนมากกว่า 4,000 แห่ง กรุงเทพมีมากกว่า 180 แห่ง — กระจุกตัวอยู่ในคลองเตย, พระโขนง, บางรัก (มัสยิดฮารูณ), อินดราสแควร์ และบางหลวง การกระจุกตัวที่ใหญ่ที่สุดในประเทศคือสี่จังหวัดภาคใต้ — ปัตตานี, ยะลา, นราธิวาส และสงขลา — ที่ชาวมุสลิมเป็นส่วนใหญ่",
+      zh: "泰国有超过 4,000 座注册清真寺。仅曼谷就有 180 多座 —— 集中在 Klong Toey、Phra Khanong、Bang Rak(Haroon 清真寺)、Indra Square 和 Bang Luang。全国最大的集中地是四个南部省份 —— 北大年、惹拉、那拉提瓦和宋卡 —— 那里的穆斯林占多数。大多数清真寺在祈祷时间外欢迎非穆斯林访客。",
+      ja: "タイには4,000以上の登録モスクがあります。バンコクだけで180以上 — クロントイ、プラカノン、バンラク(ハルーン・モスク)、インドラ・スクエア、バンルアンに集中。全国最大の集中地は南部の4州 — パタニ、ヤラ、ナラティワット、ソンクラー — でムスリムが多数派です。大半のモスクは礼拝時間外、敬意ある見学のために非ムスリム訪問者を歓迎します。",
     },
     criteria: [
       {
@@ -411,6 +435,10 @@ export const NICHE_GUIDES: Record<Niche, NicheGuide> = {
     intro: {
       en: "Thailand is a top-3 global medical tourism destination, and Bangkok has rapidly built muslim-friendly medical services to capture GCC and Southeast Asian patients. Bumrungrad, Samitivej, BNH, Bangkok Hospital, and Phyathai all offer: female-only doctor on request (for women's health), halal-only meal trays, prayer room access on-site, abaya-friendly examination gowns, and Arabic-speaking medical coordinators. Costs run 30–70% lower than Western or GCC equivalents while meeting JCI international standards.",
       ko: "태국은 세계 3대 의료관광 국가로, 방콕은 GCC 및 동남아 무슬림 환자를 위한 무슬림 친화 의료 서비스를 빠르게 구축했습니다. Bumrungrad, Samitivej, BNH, Bangkok Hospital, Phyathai 모두 다음을 제공합니다: 요청 시 여의사(여성 진료), 할랄 전용 식사 트레이, 원내 기도실, 아바야 친화 검사 가운, 아랍어 통역 의료 코디네이터. 비용은 서구나 GCC 대비 30–70% 저렴하며 JCI 국제 인증 기준을 충족합니다.",
+      ar: "تعد تايلاند من أفضل 3 وجهات للسياحة العلاجية عالمياً، وقد بنت بانكوك بسرعة خدمات طبية صديقة للمسلمين لاستقطاب المرضى من الخليج وجنوب شرق آسيا. تقدم Bumrungrad و Samitivej و BNH و Bangkok Hospital و Phyathai: طبيبات حسب الطلب، وجبات حلال، غرف صلاة في المستشفى، عباءات للفحص، ومنسقين طبيين يتحدثون العربية. التكاليف أقل بنسبة 30-70% من الغرب أو الخليج مع الالتزام بمعايير JCI الدولية.",
+      th: "ไทยเป็นจุดหมายการท่องเที่ยวเชิงการแพทย์อันดับ 3 ของโลก กรุงเทพได้สร้างบริการทางการแพทย์มุสลิม-เฟรนด์ลีอย่างรวดเร็วสำหรับผู้ป่วยมุสลิมจาก GCC และเอเชียตะวันออกเฉียงใต้ Bumrungrad, Samitivej, BNH, Bangkok Hospital, Phyathai ทั้งหมดมี: หมอผู้หญิงตามคำขอ, ถาดอาหารฮาลาลเท่านั้น, ห้องละหมาดในโรงพยาบาล, ชุดตรวจที่เป็นมิตรกับอาบายา, และผู้ประสานงานทางการแพทย์ที่พูดอาหรับ ค่าใช้จ่ายต่ำกว่าตะวันตกหรือ GCC 30-70%",
+      zh: "泰国是全球前三的医疗旅游目的地,曼谷已迅速建立面向海湾合作委员会和东南亚穆斯林患者的穆斯林友好医疗服务。Bumrungrad、Samitivej、BNH、Bangkok Hospital、Phyathai 都提供:可申请女医生(妇女健康)、清真专属餐盘、院内祈祷室、阿巴雅友好检查服、阿拉伯语医疗协调员。费用比西方或海湾地区低 30-70%,符合 JCI 国际认证标准。",
+      ja: "タイは世界トップ3の医療観光目的地で、バンコクはGCCおよび東南アジアのムスリム患者向けにムスリム・フレンドリー医療サービスを急速に構築しました。Bumrungrad、Samitivej、BNH、Bangkok Hospital、Phyathaiはすべて以下を提供:リクエストに応じた女医、ハラール専用食事トレイ、院内礼拝室、アバヤ対応の診察ガウン、アラビア語医療コーディネーター。費用は西側諸国やGCCより30-70%安く、JCI国際基準を満たしています。",
     },
     criteria: [
       {
@@ -497,6 +525,10 @@ export const NICHE_GUIDES: Record<Niche, NicheGuide> = {
     intro: {
       en: "Halal beauty in Thailand spans certified cosmetics (alcohol-free, no animal-derived ingredients), women-only salons and spas (popular with GCC clientele), and hijab-friendly hair stylists with private rooms. Brands like Wardah (Indonesia), Inika (Australia), and a growing list of Thai indie brands now carry CICOT certification. Salons catering specifically to muslim women have multiplied in Sukhumvit, Pratunam, and near major halal hotels.",
       ko: "태국의 할랄 뷰티는 인증된 화장품(알코올 무첨가, 동물성 무첨가), 여성 전용 살롱/스파(GCC 고객 인기), 그리고 개인실 갖춘 히잡 친화 헤어 스타일리스트로 나뉩니다. 와르다(인도네시아), Inika(호주), 그리고 늘어나는 태국 인디 브랜드들이 CICOT 인증을 보유합니다. 무슬림 여성 전용 살롱이 수쿰빗, 프라투남, 주요 할랄 호텔 근처에 늘고 있습니다.",
+      ar: "تشمل الجمال الحلال في تايلاند مستحضرات تجميل معتمدة (خالية من الكحول، بدون مكونات حيوانية)، صالونات وسبا للنساء فقط (شعبية لدى عملاء الخليج)، ومصففي شعر صديقين للحجاب مع غرف خاصة. علامات تجارية مثل Wardah (إندونيسيا)، Inika (أستراليا) ، وقائمة متزايدة من العلامات التجارية التايلاندية المستقلة تحمل الآن شهادة CICOT.",
+      th: "บิวตี้ฮาลาลในไทยครอบคลุมเครื่องสำอางที่ได้รับการรับรอง (ปราศจากแอลกอฮอล์, ไม่มีส่วนผสมจากสัตว์), ซาลอน/สปาผู้หญิงล้วน (เป็นที่นิยมในกลุ่มลูกค้า GCC), และช่างทำผมที่เป็นมิตรกับฮิญาบพร้อมห้องส่วนตัว แบรนด์ Wardah (อินโดนีเซีย), Inika (ออสเตรเลีย) และแบรนด์อินดี้ของไทยที่เพิ่มขึ้นเรื่อยๆ ได้รับการรับรอง CICOT",
+      zh: "泰国的清真美容涵盖经认证的化妆品(不含酒精、无动物成分)、女性专用沙龙和水疗(海湾客户喜爱),以及拥有私人房间的头巾友好发型师。Wardah(印尼)、Inika(澳大利亚)等品牌,以及越来越多的泰国独立品牌现在都获得了 CICOT 认证。",
+      ja: "タイのハラール・ビューティーは、認定化粧品(アルコールフリー、動物由来成分なし)、女性専用サロン・スパ(GCC顧客に人気)、プライベートルーム付きのヒジャブ・フレンドリー・ヘアスタイリストに分かれます。Wardah(インドネシア)、Inika(オーストラリア)、そして増え続けるタイのインディーブランドが現在CICOT認証を取得しています。",
     },
     criteria: [
       {
