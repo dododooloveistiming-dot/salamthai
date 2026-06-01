@@ -7,7 +7,45 @@ import Link from "next/link";
 import { SITE, SUPPORTED_LANGS } from "@/lib/i18n";
 import type { Lang, Niche } from "@/lib/types";
 import { NICHE_META, nicheName } from "@/lib/types";
-import { CITIES, TOPICS } from "@/lib/wiki-registry";
+
+// Inlined from lib/wiki-registry to sidestep Vercel's stricter Next 14 page
+// type validator that misreports the named import as an invalid Page export
+// field. Keep these in sync with lib/wiki-registry.ts (source of truth for
+// the dynamic city/topic routes).
+const CITIES = [
+  { slug: "bangkok",       name: "Bangkok",       emoji: "🏙",  hint: "Soi Arab · Indra Square · Phra Khanong" },
+  { slug: "phuket",        name: "Phuket",        emoji: "🏖",  hint: "Halal beaches & Old Town" },
+  { slug: "krabi",         name: "Krabi",         emoji: "🚤",  hint: "Muslim community + Andaman halal seafood" },
+  { slug: "chiang-mai",    name: "Chiang Mai",    emoji: "🏔",  hint: "Halal khao soi + Old City mosques" },
+  { slug: "hat-yai",       name: "Hat Yai",       emoji: "🚉",  hint: "Southern hub — Malaysia border" },
+  { slug: "pattaya",       name: "Pattaya",       emoji: "🏄",  hint: "GCC traveler favorite" },
+  { slug: "hua-hin",       name: "Hua Hin",       emoji: "⛱",  hint: "Royal beach town" },
+  { slug: "koh-samui",     name: "Koh Samui",     emoji: "🌴",  hint: "Island resorts" },
+  { slug: "ko-lanta",      name: "Ko Lanta",      emoji: "🏝",  hint: "Muslim-majority island" },
+  { slug: "pattani",       name: "Pattani",       emoji: "🕌",  hint: "Cultural heart of Thai Muslims" },
+];
+const TOPICS = [
+  { slug: "cicot-certification",            title: "CICOT halal certification",          emoji: "✅", hint: "How Thailand's official halal label works" },
+  { slug: "ramadan-in-thailand",            title: "Ramadan in Thailand",                emoji: "🌙", hint: "What changes during the holy month" },
+  { slug: "iftar-buffets-bangkok",          title: "Iftar buffets in Bangkok",           emoji: "🍽", hint: "Top hotel & restaurant iftar tables" },
+  { slug: "prayer-rooms-thai-airports",     title: "Prayer rooms at Thai airports",      emoji: "🛫", hint: "Suvarnabhumi · Don Mueang · Phuket · Krabi" },
+  { slug: "muslim-travel-etiquette",        title: "Muslim travel etiquette in Thailand", emoji: "🤝", hint: "What to expect, what to ask, what to bring" },
+  { slug: "halal-vs-muslim-friendly",       title: "Halal vs. muslim-friendly",          emoji: "🔍", hint: "The label difference explained" },
+  { slug: "halal-tourism-statistics",       title: "Halal tourism statistics",           emoji: "📊", hint: "8M+ muslim arrivals annually" },
+  { slug: "qibla-direction-thailand",       title: "Qibla direction in Thailand",        emoji: "🧭", hint: "Roughly west-northwest from anywhere in TH" },
+  { slug: "jumah-prayer-bangkok-mosques",   title: "Jum'ah prayer at Bangkok mosques",   emoji: "🕌", hint: "Schedule, which mosques, parking" },
+  { slug: "halal-meat-suppliers-thailand",  title: "Halal meat suppliers in Thailand",   emoji: "🥩", hint: "Wholesale, retail, certifications" },
+  { slug: "muslim-population-thailand",     title: "Muslim population in Thailand",      emoji: "📌", hint: "Geography & community" },
+  { slug: "alcohol-free-thai-drinks",       title: "Alcohol-free Thai drinks guide",     emoji: "🥥", hint: "What to order at a Thai bar/cafe" },
+  { slug: "wudu-facilities-bangkok",        title: "Wudu facilities in Bangkok",         emoji: "💧", hint: "Where to perform ablution in public" },
+  { slug: "family-friendly-halal-hotels-phuket", title: "Family-friendly halal hotels in Phuket", emoji: "👨‍👩‍👧", hint: "Beach access + halal kitchen + prayer kit" },
+  { slug: "southern-thailand-muslim-history",    title: "Southern Thailand muslim history",       emoji: "📜", hint: "Pattani · Yala · Narathiwat" },
+  { slug: "zamzam-water-availability-bangkok",   title: "Zamzam water in Bangkok",                emoji: "🚰", hint: "Where to find it" },
+  { slug: "arabic-language-thailand",       title: "Arabic language in Thailand",        emoji: "🇸🇦", hint: "Speakers, classes, signage" },
+  { slug: "halal-medical-tourism",          title: "Halal medical tourism",              emoji: "🏥", hint: "Female doctors, halal hospital diets" },
+  { slug: "muslim-wedding-customs-thailand", title: "Muslim wedding customs in Thailand", emoji: "💍", hint: "Nikah, walima, halal catering" },
+  { slug: "turkish-restaurant-history-bangkok", title: "Turkish restaurant scene in Bangkok", emoji: "🥙", hint: "How Bangkok became a kebab capital" },
+];
 
 export const dynamic = "force-static";
 export function generateStaticParams() {
