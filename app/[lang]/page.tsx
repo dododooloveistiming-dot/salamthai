@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { loadPlaces, getTopPlacesPerNiche } from "@/lib/data";
-import { SITE, SUPPORTED_LANGS, T, t } from "@/lib/i18n";
+import { SITE, SUPPORTED_LANGS, t } from "@/lib/i18n";
 import type { Lang, Niche } from "@/lib/types";
 import { NICHE_META, nicheName, nicheTagline } from "@/lib/types";
+import HeroSearch from "@/components/HeroSearch";
 
 export const dynamic = "force-static";
 
@@ -26,116 +27,169 @@ export async function generateMetadata({ params }: { params: { lang: Lang } }): 
   };
 }
 
+const ALL_NICHES: Niche[] = [
+  "halal-food", "muslim-hotel", "halal-tour", "mosque", "halal-clinic", "halal-beauty",
+];
+
+// Each popular query is tagged with the niche it routes to so we can hide
+// queries whose niche has no data yet.
+const POPULAR_QUERIES: Array<{ label: string; href: string; niche: Niche }> = [
+  { label: "Halal restaurants Bangkok",   href: "/c/halal-food/?city=bangkok",    niche: "halal-food" },
+  { label: "Muslim hotels Phuket",        href: "/c/muslim-hotel/?city=phuket",   niche: "muslim-hotel" },
+  { label: "Iftar buffet near me",        href: "/c/halal-food/",                  niche: "halal-food" },
+  { label: "Mosques in Bangkok",          href: "/c/mosque/?city=bangkok",        niche: "mosque" },
+  { label: "CICOT-certified clinic",      href: "/c/halal-clinic/",                niche: "halal-clinic" },
+  { label: "Halal cosmetics Bangkok",     href: "/c/halal-beauty/",                niche: "halal-beauty" },
+];
+
 export default function LandingPage({ params }: { params: { lang: Lang } }) {
   const { lang } = params;
   const bundle = loadPlaces();
-  const topPerNiche = getTopPlacesPerNiche(3);
+  const topPerNiche = getTopPlacesPerNiche(4);
+  // Only render niches that actually have data — empty "Coming soon" cards
+  // dilute trust on first visit.
+  const niches = ALL_NICHES.filter((n) => ((bundle.by_niche as any)[n] ?? 0) > 0);
+  const popularQueries = POPULAR_QUERIES.filter((q) => ((bundle.by_niche as any)[q.niche] ?? 0) > 0);
 
-  const niches: Niche[] = [
-    "halal-food", "muslim-hotel", "halal-tour", "mosque", "halal-clinic", "halal-beauty",
+  // JSON-LD: Organization + WebSite (with sitelinks search action)
+  const jsonLd = [
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      name: SITE.name,
+      url: SITE.origin,
+      description: SITE.tagline.en,
+      logo: `${SITE.origin}/og-default.png`,
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      name: SITE.name,
+      url: SITE.origin,
+      inLanguage: ["en", "ko", "th", "zh", "ja", "ar"],
+    },
   ];
 
   return (
-    <main className="mx-auto max-w-6xl px-4 pb-20">
-      {/* HERO — Islamic-themed: deep emerald + gold + 8-pointed star pattern */}
-        <section className="relative mt-6 overflow-hidden rounded-3xl border border-islam-200 bg-gradient-to-br from-islam-50 via-sand-50 to-gold-50 px-6 py-16 dark:border-islam-800/60 dark:from-islam-950/60 dark:via-ink-900 dark:to-gold-950/40 sm:px-12">
-          {/* Islamic 8-pointed-star pattern overlay */}
-          <div className="bg-islamic-stars absolute inset-0 opacity-60" aria-hidden="true" />
-          {/* Soft color blobs */}
-          <div className="absolute -right-10 -top-10 h-56 w-56 rounded-full bg-islam-300/50 blur-3xl dark:bg-islam-700/30" aria-hidden="true" />
-          <div className="absolute -bottom-12 -left-12 h-64 w-64 rounded-full bg-gold-300/40 blur-3xl dark:bg-gold-700/30" aria-hidden="true" />
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-          <div className="relative">
-            {/* Arabic greeting — top-of-fold, calligraphic */}
-            <div className="mb-5 flex flex-wrap items-baseline gap-x-3 gap-y-1">
-              <span
-                className="font-arabic text-2xl font-medium text-islam-700 dark:text-islam-300 sm:text-3xl"
-                dir="rtl"
-                lang="ar"
-              >
-                {t("greeting_arabic", lang)}
-              </span>
-              {t("greeting_translit", lang) && (
-                <span className="text-xs font-medium text-islam-700/80 dark:text-islam-400">
-                  {t("greeting_translit", lang)}
-                </span>
-              )}
-              <span className="text-xs muted">· {t("greeting_meaning", lang)}</span>
-            </div>
+      {/* ========== HERO — Vogue Arabia × Booking trust × Airbnb ========== */}
+      <section className="relative isolate overflow-hidden bg-islam-950 text-white">
+        {/* Background photo — Sheikh Zayed Grand Mosque at golden hour */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="https://images.unsplash.com/photo-1542295669297-4d352b042bca?w=2400&h=1400&fit=crop&q=80"
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 -z-10 h-full w-full object-cover opacity-50"
+          loading="eager"
+        />
+        {/* Layered overlays */}
+        <div className="absolute inset-0 -z-10 bg-gradient-to-br from-islam-950/95 via-islam-900/80 to-emerald-950/85" aria-hidden="true" />
+        <div className="bg-islamic-stars absolute inset-0 -z-10 opacity-[0.10]" aria-hidden="true" />
+        {/* Gold blob accents */}
+        <div className="absolute -right-32 -top-32 h-96 w-96 rounded-full bg-gold-500/15 blur-3xl" aria-hidden="true" />
+        <div className="absolute -bottom-32 -left-32 h-96 w-96 rounded-full bg-emerald-500/15 blur-3xl" aria-hidden="true" />
 
-            {/* Verified stat pill */}
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-islam-300 bg-white/80 px-3 py-1 text-xs font-semibold text-islam-800 dark:border-islam-700 dark:bg-islam-950/40 dark:text-islam-300">
-              <span className="h-1.5 w-1.5 rounded-full bg-islam-500" />
-              {bundle.total.toLocaleString()} verified places · avg Trust Score {bundle.avg_trust}
-            </div>
+        {/* Decorative dome silhouettes — top edge */}
+        <svg className="absolute inset-x-0 top-0 h-8 w-full text-gold-500/20" viewBox="0 0 1200 32" preserveAspectRatio="none" aria-hidden="true">
+          <path fill="currentColor" d="M0 32 V20 Q60 0 120 20 Q180 0 240 20 Q300 0 360 20 Q420 0 480 20 Q540 0 600 20 Q660 0 720 20 Q780 0 840 20 Q900 0 960 20 Q1020 0 1080 20 Q1140 0 1200 20 V32 Z"/>
+        </svg>
 
-            {/* Title — Salaam in gold, rest in deep emerald */}
-            <h1 className="text-4xl font-black tracking-tight text-islam-950 dark:text-islam-50 sm:text-6xl">
-              <span className="text-gradient-gold">Salaam</span>{" "}
-              <span>Thailand.</span>
-              <br />
-              <span className="text-3xl sm:text-5xl">{t("hero_title", lang).replace(/^Salaam Thailand\.\s*/i, "").replace(/^[^.]+\.\s*/, "")}</span>
-            </h1>
-
-            <p className="mt-5 max-w-2xl text-base font-medium text-ink-800 dark:text-ink-200 sm:text-lg">
-              {t("hero_subtitle", lang)}
-            </p>
-            <p className="mt-3 text-xs text-islam-800/70 dark:text-islam-400/80">
-              {t("sources_pitch", lang)}
-            </p>
-
-            {/* Category quick links — gold-accent pills */}
-            <div className="mt-8 flex flex-wrap gap-2.5">
-              {niches.map((n) => (
-                <Link
-                  key={n}
-                  href={`/${lang}/c/${n}/`}
-                  className="inline-flex items-center gap-2 rounded-full border border-islam-300/70 bg-white/90 px-4 py-2 text-sm font-semibold text-islam-900 backdrop-blur transition hover:-translate-y-0.5 hover:border-gold-400 hover:bg-gold-50 hover:shadow-md dark:border-islam-700/60 dark:bg-ink-900/80 dark:text-islam-100 dark:hover:border-gold-600 dark:hover:bg-gold-950/40"
-                >
-                  <span className="text-base">{NICHE_META[n].emoji}</span>
-                  <span>{nicheName(n, lang)}</span>
-                  <span className="rounded-full bg-islam-100 px-1.5 text-xs font-bold text-islam-700 dark:bg-islam-900/60 dark:text-islam-300">
-                    {(bundle.by_niche as any)[n] ?? 0}
-                  </span>
-                </Link>
-              ))}
-            </div>
+        <div className="relative mx-auto max-w-6xl px-6 pb-24 pt-20 sm:px-10 sm:pb-32 sm:pt-28">
+          {/* Top eyebrow trust strip */}
+          <div className="mb-8 flex flex-wrap items-center gap-x-4 gap-y-2 text-[10px] font-bold uppercase tracking-[0.22em] text-gold-300/90">
+            <span className="inline-flex items-center gap-1.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-gold-400" />
+              Verified
+            </span>
+            <span>·</span>
+            <span>Muslim-Friendly</span>
+            <span>·</span>
+            <span>No paid promotion</span>
+            <span>·</span>
+            <span>6 independent sources</span>
           </div>
-        </section>
 
-        {/* POPULAR PICKS — quick deep-link strip */}
-        <section className="mt-8">
-          <div className="text-xs uppercase tracking-wide font-bold muted mb-3">
-            {t("popular_picks", lang)}
+          {/* Arabic ornament */}
+          <div className="mb-6 flex items-baseline gap-3 text-gold-300">
+            <span className="font-arabic text-3xl sm:text-4xl" dir="rtl" lang="ar">
+              ٱلسَّلَامُ عَلَيْكُمْ
+            </span>
+            <span className="text-xs font-medium tracking-wide text-gold-300/70">
+              Assalāmu ʿAlaykum
+            </span>
           </div>
-          <div className="flex flex-wrap gap-2">
-            {[
-              { label: "Bangkok halal restaurant", href: `/${lang}/c/halal-food/?city=bangkok` },
-              { label: "Phuket muslim hotel", href: `/${lang}/c/muslim-hotel/?city=phuket` },
-              { label: "Krabi halal tour", href: `/${lang}/c/halal-tour/?city=krabi` },
-              { label: "Bangkok mosque", href: `/${lang}/c/mosque/?city=bangkok` },
-              { label: "Bumrungrad muslim friendly", href: `/${lang}/c/halal-clinic/?city=bangkok` },
-              { label: "Halal cosmetics", href: `/${lang}/c/halal-beauty/` },
-              { label: "Chiang Mai halal", href: `/${lang}/c/halal-food/?city=chiang-mai` },
-            ].map((p) => (
+
+          {/* Display headline — Playfair serif. Tuned for mobile readability. */}
+          <h1 className="h-display max-w-4xl text-[2.5rem] leading-[1.05] text-white sm:text-6xl lg:text-7xl">
+            Thailand&apos;s <span className="text-gradient-gold italic">verified</span><br />
+            halal directory.
+          </h1>
+
+          <p className="mt-6 max-w-2xl text-base leading-relaxed text-white/80 sm:text-lg">
+            Restaurants. Hotels. Tours. Mosques. Clinics. Beauty.
+            Cross-checked across Google, Reddit, Naver, Pantip, YouTube, and official sources —
+            never paid placement.
+          </p>
+
+          {/* Search input — primary CTA with autocomplete */}
+          <div className="mt-10">
+            <HeroSearch lang={lang} />
+          </div>
+
+          {/* Popular queries */}
+          <div className="mt-6 flex flex-wrap gap-2 text-xs">
+            <span className="text-white/50">Popular:</span>
+            {popularQueries.map((q) => (
               <Link
-                key={p.label}
-                href={p.href}
-                className="rounded-full bg-ink-100 px-3 py-1.5 text-xs font-medium text-ink-700 transition hover:bg-emerald-100 hover:text-emerald-800 dark:bg-ink-800 dark:text-ink-300 dark:hover:bg-emerald-900/40 dark:hover:text-emerald-300"
+                key={q.label}
+                href={`/${lang}${q.href}`}
+                className="rounded-full border border-white/15 bg-white/5 px-3 py-1 font-medium text-white/85 backdrop-blur transition hover:border-gold-400/60 hover:bg-gold-400/15 hover:text-gold-200"
               >
-                {p.label} →
+                {q.label}
               </Link>
             ))}
           </div>
-        </section>
 
-        {/* CATEGORY GRID */}
-        <section className="mt-16">
-          <div className="mb-6 flex items-end justify-between">
-            <h2 className="text-2xl font-bold tracking-tight">{t("browse_categories", lang)}</h2>
-            <span className="text-xs muted">{bundle.total.toLocaleString()} {t("places_count", lang)}</span>
+          {/* Trust statline */}
+          <div className="mt-12 grid max-w-2xl grid-cols-3 gap-6 border-t border-white/10 pt-8">
+            <div>
+              <div className="font-display text-3xl font-bold text-white">{bundle.total.toLocaleString()}+</div>
+              <div className="mt-1 text-xs uppercase tracking-wider text-white/60">Verified places</div>
+            </div>
+            <div>
+              <div className="font-display text-3xl font-bold text-white">6</div>
+              <div className="mt-1 text-xs uppercase tracking-wider text-white/60">Source channels</div>
+            </div>
+            <div>
+              <div className="font-display text-3xl font-bold text-gold-300">0</div>
+              <div className="mt-1 text-xs uppercase tracking-wider text-white/60">Paid placements</div>
+            </div>
           </div>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        </div>
+
+        {/* Bottom edge — dome silhouette decoration */}
+        <svg className="absolute inset-x-0 bottom-0 h-6 w-full text-bg" viewBox="0 0 1200 24" preserveAspectRatio="none" aria-hidden="true">
+          <path fill="currentColor" d="M0 24 V12 Q60 0 120 12 Q180 0 240 12 Q300 0 360 12 Q420 0 480 12 Q540 0 600 12 Q660 0 720 12 Q780 0 840 12 Q900 0 960 12 Q1020 0 1080 12 Q1140 0 1200 12 V24 Z" />
+        </svg>
+      </section>
+
+      <main className="mx-auto max-w-6xl px-4 pb-20">
+        {/* ========== CATEGORIES — Editorial cards ========== */}
+        <section className="mt-20">
+          <div className="mb-10 flex flex-col items-baseline gap-2 sm:flex-row sm:justify-between">
+            <div>
+              <div className="eyebrow mb-2">Categories</div>
+              <h2 className="h-display text-3xl text-islam-950 dark:text-islam-50 sm:text-4xl">
+                Where will you start?
+              </h2>
+            </div>
+            <span className="text-sm muted">{bundle.total.toLocaleString()} verified places · across {niches.length} categories</span>
+          </div>
+
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {niches.map((n) => {
               const meta = NICHE_META[n];
               const count = (bundle.by_niche as any)[n] ?? 0;
@@ -145,71 +199,114 @@ export default function LandingPage({ params }: { params: { lang: Lang } }) {
                 <Link
                   key={n}
                   href={`/${lang}/c/${n}/`}
-                  className={`group relative flex flex-col gap-3 rounded-2xl border bg-white p-5 transition dark:bg-ink-900 ${
-                    isReady
-                      ? "border-ink-100 hover:-translate-y-0.5 hover:border-emerald-400 hover:shadow-lg dark:border-ink-800"
-                      : "border-dashed border-ink-200 opacity-70 dark:border-ink-700"
-                  }`}
+                  className="card-editorial group relative flex flex-col gap-4 p-7"
                 >
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <div className="text-3xl">{meta.emoji}</div>
-                      <h3 className="mt-2 text-lg font-bold">{nicheName(n, lang)}</h3>
-                      <p className="mt-1 text-sm muted">{nicheTagline(n, lang)}</p>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-2xl font-black tabular-nums">{count.toLocaleString()}</div>
-                      <div className="text-[10px] muted uppercase">{isReady ? t("places_count", lang) : t("coming_soon", lang)}</div>
-                    </div>
+                  {/* Gold corner mark */}
+                  <span className="absolute right-5 top-5 text-base text-gold-500 opacity-0 transition group-hover:opacity-100" aria-hidden="true">→</span>
+
+                  <div className="text-5xl">{meta.emoji}</div>
+
+                  <div>
+                    <h3 className="h-display text-2xl text-islam-950 dark:text-islam-50">
+                      {nicheName(n, lang)}
+                    </h3>
+                    <p className="mt-1 text-sm leading-relaxed muted">{nicheTagline(n, lang)}</p>
                   </div>
-                  {topThree.length > 0 && (
-                    <div className="mt-2 space-y-1 border-t border-ink-100 pt-2 text-xs dark:border-ink-800">
-                      <div className="muted">{t("top_picks", lang)}:</div>
-                      {topThree.map((p) => (
-                        <div key={p.id} className="flex items-center justify-between">
-                          <span className="truncate">{p.name}</span>
-                          <span className="ml-2 shrink-0 rounded bg-emerald-100 px-1.5 py-0.5 text-[10px] font-bold text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
-                            {p.trust_score}
-                          </span>
-                        </div>
-                      ))}
+
+                  <div className="mt-auto flex items-baseline justify-between border-t border-ink-100/70 pt-4 dark:border-ink-800">
+                    <div>
+                      <div className="font-display text-3xl font-bold tabular-nums text-islam-900 dark:text-islam-100">
+                        {count.toLocaleString()}
+                      </div>
+                      <div className="text-[10px] uppercase tracking-wider muted">
+                        {isReady ? "verified places" : t("coming_soon", lang)}
+                      </div>
                     </div>
-                  )}
+                    {isReady && topThree.length > 0 && (
+                      <div className="text-right text-[10px] uppercase tracking-wider text-gold-700 dark:text-gold-400">
+                        Top picks ready
+                      </div>
+                    )}
+                  </div>
                 </Link>
               );
             })}
           </div>
         </section>
 
-        {/* MULTI-SOURCE PITCH */}
-        <section className="mt-16 rounded-2xl border border-ink-100 bg-white p-8 dark:border-ink-800 dark:bg-ink-900">
-          <h2 className="text-xl font-bold">{t("score_pitch_title", lang)}</h2>
-          <p className="mt-2 text-sm muted">{t("score_pitch_blurb", lang)}</p>
-          {(() => {
-            const cards = [
-              { name: "Google", count: bundle.places.filter((p) => p.source_badges.google_reviews > 0).length, badge: "★" },
-              { name: "Reddit", count: bundle.places.filter((p) => p.source_badges.reddit > 0).length, badge: "💬" },
-              { name: "YouTube", count: bundle.places.filter((p) => p.source_badges.videos > 0).length, badge: "▶" },
-              { name: "Naver", count: bundle.places.filter((p) => p.source_badges.naver > 0).length, badge: "🇰🇷" },
-              { name: "Pantip", count: bundle.places.filter((p) => p.source_badges.pantip > 0).length, badge: "🇹🇭" },
-              { name: "Bookimed", count: bundle.places.filter((p) => p.source_badges.bookimed > 0).length, badge: "🏥" },
-              { name: "Photos", count: bundle.places.filter((p) => p.source_badges.photos > 0).length, badge: "📸" },
-              { name: "Official sites", count: bundle.places.filter((p) => p.source_badges.website > 0).length, badge: "🔗" },
-            ].filter((s) => s.count > 0);
-            return (
-              <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
-                {cards.map((s) => (
-                  <div key={s.name} className="rounded-xl bg-emerald-50/60 p-3 text-sm dark:bg-emerald-950/30">
-                    <div className="text-xl">{s.badge}</div>
-                    <div className="mt-1 font-bold">{s.name}</div>
-                    <div className="text-xs muted">{s.count.toLocaleString()} places</div>
-                  </div>
-                ))}
-              </div>
-            );
-          })()}
+        <div className="hr-editorial" />
+
+        {/* ========== WHY TRUST US — 3-column pitch ========== */}
+        <section className="mt-4">
+          <div className="mb-10 text-center">
+            <div className="eyebrow mb-2">How it works</div>
+            <h2 className="h-display text-3xl text-islam-950 dark:text-islam-50 sm:text-4xl">
+              Independent. Cross-checked. Public formula.
+            </h2>
+            <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed muted">
+              Every place is scored on signals you can audit. No place can buy a higher rank — the formula is in the open.
+            </p>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-3">
+            <div className="card-editorial p-7">
+              <div className="mb-3 text-3xl">🔍</div>
+              <h3 className="font-display text-xl font-bold text-islam-950 dark:text-islam-50">
+                6 independent sources
+              </h3>
+              <p className="mt-2 text-sm leading-relaxed muted">
+                Google · Reddit · Naver · Pantip · YouTube · Official websites. Each signal contributes independently to the Trust Score.
+              </p>
+            </div>
+
+            <div className="card-editorial p-7">
+              <div className="mb-3 text-3xl">🚫</div>
+              <h3 className="font-display text-xl font-bold text-islam-950 dark:text-islam-50">
+                No paid placement
+              </h3>
+              <p className="mt-2 text-sm leading-relaxed muted">
+                Affiliate commissions support the site after the score is computed — never before. Featured listings are clearly labeled.
+              </p>
+            </div>
+
+            <div className="card-editorial p-7">
+              <div className="mb-3 text-3xl">🕌</div>
+              <h3 className="font-display text-xl font-bold text-islam-950 dark:text-islam-50">
+                Halal-first signals
+              </h3>
+              <p className="mt-2 text-sm leading-relaxed muted">
+                CICOT mentions, prayer-room availability, qibla, and halal kitchen flags are text-mined across 8 languages and weighted toward muslim travelers.
+              </p>
+            </div>
+          </div>
         </section>
 
-    </main>
+        <div className="hr-editorial" />
+
+        {/* ========== POPULAR DEEP-LINK CARPET ========== */}
+        <section className="mt-4">
+          <div className="mb-6">
+            <div className="eyebrow mb-2">Popular searches</div>
+            <h2 className="h-display text-2xl text-islam-950 dark:text-islam-50">Where muslim travelers go next</h2>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {popularQueries.concat([
+              { label: "Bangkok mosque near hotel",    href: "/c/mosque/?city=bangkok",       niche: "mosque" as Niche },
+              { label: "Phuket halal seafood",         href: "/c/halal-food/?city=phuket",    niche: "halal-food" as Niche },
+              { label: "Bumrungrad muslim friendly",   href: "/c/halal-clinic/?city=bangkok", niche: "halal-clinic" as Niche },
+              { label: "Krabi muslim resort",          href: "/c/muslim-hotel/?city=krabi",   niche: "muslim-hotel" as Niche },
+            ]).filter((q) => ((bundle.by_niche as any)[q.niche] ?? 0) > 0).map((q) => (
+              <Link
+                key={q.label}
+                href={`/${lang}${q.href}`}
+                className="rounded-full border border-ink-200 bg-white px-4 py-2 text-xs font-medium text-ink-700 transition hover:border-gold-400 hover:bg-gold-50 hover:text-gold-900 dark:border-ink-700 dark:bg-ink-900 dark:text-ink-300"
+              >
+                {q.label} →
+              </Link>
+            ))}
+          </div>
+        </section>
+      </main>
+    </>
   );
 }

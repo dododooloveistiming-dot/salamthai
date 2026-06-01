@@ -1,5 +1,6 @@
-import type { Lang } from "@/lib/types";
+import type { Lang, Niche } from "@/lib/types";
 import { SUPPORTED_LANGS } from "@/lib/i18n";
+import { loadPlaces } from "@/lib/data";
 import Header from "@/components/Header";
 import SetHtmlLang from "@/components/SetHtmlLang";
 import SiteFooter from "@/components/SiteFooter";
@@ -19,13 +20,25 @@ export default function LangLayout({
   params: { lang: Lang };
 }) {
   const { lang } = params;
+  const bundle = loadPlaces();
+  const byNiche = bundle.by_niche as Record<Niche, number>;
+  const isRtl = lang === "ar";
+
   return (
     <>
       <script dangerouslySetInnerHTML={{ __html: NO_FOUC }} />
       <SetHtmlLang lang={lang} />
-      <Header lang={lang} />
-      {children}
-      <SiteFooter lang={lang} />
+      {/*
+        SSR-side language + direction marker: even though the root <html lang>
+        is fixed by Next.js root layout, this wrapping div carries lang/dir
+        in the rendered HTML so crawlers (Google, Bing, AI bots) and screen
+        readers see correct linguistic context for each language route.
+      */}
+      <div lang={lang} dir={isRtl ? "rtl" : "ltr"} className="min-h-screen">
+        <Header lang={lang} byNiche={byNiche} />
+        {children}
+        <SiteFooter lang={lang} byNiche={byNiche} />
+      </div>
     </>
   );
 }
