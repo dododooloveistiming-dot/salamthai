@@ -10,6 +10,7 @@ dev_stdout.log
 dev_stderr.log
 .vercel
 .env*.local
+.claude/
 
 # Raw scraped CSVs (rebuilt by tools/community_scrapers/siamverified_harvest)
 external_data/
