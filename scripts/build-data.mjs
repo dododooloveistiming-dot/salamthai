@@ -321,6 +321,14 @@ function normalize(r, niche) {
       bookimed: r.bookimed_url || "",
     },
     is_partner: false,
+    // Negative signals (Track 4) — evidence-based safety panel
+    negative_signals: safeJson(r.negative_signals_json, []),
+    negative_trust_penalty: num(r.negative_trust_penalty),
+    // CICOT lifecycle (Track 2a)
+    cicot_mentioned: bool(r.cicot_mentioned),
+    cicot_cert_no: r.cicot_cert_no_extracted || "",
+    cicot_mention_source: r.cicot_mention_source || "",
+    cicot_mention_evidence: r.cicot_mention_evidence || "",
   };
 }
 

@@ -146,6 +146,23 @@ export interface Place {
   halal_signals_detected?: string;
   halal_signal_count?: number;
   is_halal_signaled?: boolean;
+  // Negative signals (Track 4) — evidence-based, surface on place page
+  negative_signals?: NegativeSignal[];
+  negative_trust_penalty?: number;
+  // CICOT lifecycle (Track 2a)
+  cicot_mentioned?: boolean;
+  cicot_cert_no?: string;
+  cicot_mention_source?: string;
+  cicot_mention_evidence?: string;
+}
+
+export interface NegativeSignal {
+  type: string;            // e.g., "alcohol_in_name_or_category"
+  severity: "critical" | "high" | "medium" | "low";
+  source: string;          // e.g., "text_rule:review_snippets"
+  evidence_text: string;   // human-readable evidence
+  snippet?: string;        // surrounding context
+  detected_at: string;     // ISO date
 }
 
 export interface CommunityThread {

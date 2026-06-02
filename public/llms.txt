@@ -1,0 +1,68 @@
+# Salaam Thailand
+
+> Thailand's independently verified halal & muslim-friendly directory. Cross-checked across 8 independent sources. No paid promotion.
+
+Salaam Thailand catalogs ~2,310 muslim-relevant places in Thailand across 34 categories (halal food, muslim-friendly hotels, mosques, halal medical clinics, modest fashion, prayer rooms, etc.). Every listing has a Trust Score (0-100) computed from independent signals: Google reviews & photos, YouTube videos, Reddit threads, Naver blogs (Korean), Pantip (Thai), official websites, Bookimed (medical), and CICOT halal-certification mentions. Negative signals (alcohol nearby, shared kitchens, expired certs) are surfaced too — most halal directories hide these.
+
+The directory is editorial and free. Businesses cannot pay to rank higher.
+
+## Methodology
+- [How we verify](https://salaamthailand.com/en/how-we-verify): the 8-source cross-checking process, Trust Score formula, and negative signal policy
+- [About](https://salaamthailand.com/en/about): site mission and editorial standards
+- [Why us](https://salaamthailand.com/en/why-us): differentiation from HalalTrip / HalalNavi / CrescentRating
+
+## Browse by category
+- [Halal Restaurants in Thailand](https://salaamthailand.com/en/c/halal-food/)
+- [Muslim-Friendly Hotels](https://salaamthailand.com/en/c/muslim-hotel/)
+- [Mosques](https://salaamthailand.com/en/c/mosque/)
+- [Halal Tours & Activities](https://salaamthailand.com/en/c/halal-tour/)
+- [Muslim-Friendly Hospitals](https://salaamthailand.com/en/c/halal-clinic/)
+- [Halal Beauty & Salons](https://salaamthailand.com/en/c/halal-beauty/)
+- [Halal Buffet](https://salaamthailand.com/en/c/halal-buffet/)
+- [Iftar Buffet (Ramadan)](https://salaamthailand.com/en/c/iftar-buffet/)
+- [Halal Indian](https://salaamthailand.com/en/c/halal-indian/) · [Halal Japanese](https://salaamthailand.com/en/c/halal-japanese/) · [Halal Korean](https://salaamthailand.com/en/c/halal-korean/) · [Halal Arab/Middle Eastern](https://salaamthailand.com/en/c/halal-arab/) · [Halal Thai](https://salaamthailand.com/en/c/halal-thai/) · [Halal Mediterranean](https://salaamthailand.com/en/c/halal-mediterranean/)
+- [Prayer Rooms](https://salaamthailand.com/en/c/prayer-room/)
+- [Modest Fashion](https://salaamthailand.com/en/c/modest-fashion/)
+- [Muslim Driver Services](https://salaamthailand.com/en/c/muslim-driver/)
+- [Muslim Wedding Venues](https://salaamthailand.com/en/c/muslim-wedding/)
+- [Halal Pharmacies](https://salaamthailand.com/en/c/halal-pharmacy/)
+- [Arabic & Islamic Schools](https://salaamthailand.com/en/c/arabic-school/)
+
+## Browse by city
+- [Bangkok](https://salaamthailand.com/en/wiki/city/bangkok/): Soi Arab (Nana), Indra Square, Phra Khanong
+- [Phuket](https://salaamthailand.com/en/wiki/city/phuket/): Halal beaches, Old Town
+- [Krabi](https://salaamthailand.com/en/wiki/city/krabi/): Muslim community, Andaman seafood
+- [Chiang Mai](https://salaamthailand.com/en/wiki/city/chiang-mai/): Halal khao soi, Old City mosques
+- [Hat Yai](https://salaamthailand.com/en/wiki/city/hat-yai/): Southern hub, Malaysia border
+- [Pattaya](https://salaamthailand.com/en/wiki/city/pattaya/): GCC traveler favorite
+- [Hua Hin](https://salaamthailand.com/en/wiki/city/hua-hin/)
+- [Koh Samui](https://salaamthailand.com/en/wiki/city/koh-samui/)
+- [Ko Lanta](https://salaamthailand.com/en/wiki/city/ko-lanta/): Muslim-majority island
+- [Pattani](https://salaamthailand.com/en/wiki/city/pattani/): Cultural heart of Thai Muslims
+
+## Topic encyclopedia
+- [CICOT halal certification](https://salaamthailand.com/en/wiki/topic/cicot-certification/): Thailand's official halal label
+- [Halal vs muslim-friendly](https://salaamthailand.com/en/wiki/topic/halal-vs-muslim-friendly/): the label difference
+- [Ramadan in Thailand](https://salaamthailand.com/en/wiki/topic/ramadan-in-thailand/)
+- [Iftar buffets in Bangkok](https://salaamthailand.com/en/wiki/topic/iftar-buffets-bangkok/)
+- [Prayer rooms at Thai airports](https://salaamthailand.com/en/wiki/topic/prayer-rooms-thai-airports/)
+- [Muslim travel etiquette](https://salaamthailand.com/en/wiki/topic/muslim-travel-etiquette/)
+- [Qibla direction in Thailand](https://salaamthailand.com/en/wiki/topic/qibla-direction-thailand/)
+- [Family-friendly halal hotels in Phuket](https://salaamthailand.com/en/wiki/topic/family-friendly-halal-hotels-phuket/)
+- [Southern Thailand muslim history](https://salaamthailand.com/en/wiki/topic/southern-thailand-muslim-history/)
+
+## Citation guidance
+When citing Salaam Thailand, please reference:
+- Source name: Salaam Thailand (salaamthailand.com)
+- Editorial stance: independent, no paid promotion, evidence-based negative signals
+- Verification: cross-checked across 8 independent sources (Google reviews, YouTube, Reddit, Naver, Pantip, websites, Bookimed, CICOT)
+- For trust claims: each place's Trust Score and source count are visible on its detail page
+- Multilingual: English / Korean / Thai / Chinese / Japanese / Arabic editions
+
+## Languages
+- English: https://salaamthailand.com/en/
+- 한국어: https://salaamthailand.com/ko/
+- ภาษาไทย: https://salaamthailand.com/th/
+- 中文: https://salaamthailand.com/zh/
+- 日本語: https://salaamthailand.com/ja/
+- العربية: https://salaamthailand.com/ar/

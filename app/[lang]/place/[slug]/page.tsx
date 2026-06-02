@@ -10,6 +10,7 @@ import TrustGauge from "@/components/TrustGauge";
 import BookingForm from "@/components/BookingForm";
 import PrayerTimes from "@/components/PrayerTimes";
 import { CITIES } from "@/lib/wiki-registry";
+import { bookingSearchUrl, agodaSearchUrl, shouldShowBookingCta } from "@/lib/booking-affiliate";
 
 // Static-with-revalidate: page HTML is pre-rendered for SEO crawlers, but
 // rebuilds every 12h so the embedded daily Prayer Times widget stays fresh.
@@ -62,8 +63,12 @@ function AffiliateCTA({ place, lang }: { place: Place; lang: Lang }) {
   if (place.affiliate.klook) out.push({ label: t("cta_book_klook", lang), href: place.affiliate.klook, primary: true });
   if (place.affiliate.viator) out.push({ label: t("cta_book_viator", lang), href: place.affiliate.viator });
   if (place.affiliate.getyourguide) out.push({ label: t("cta_book_gyg", lang), href: place.affiliate.getyourguide });
-  if (place.niche === "muslim-hotel" || place.niche === "halal-tour") {
-    if (place.affiliate.agoda) out.push({ label: t("cta_book_agoda", lang), href: place.affiliate.agoda });
+  // Hotels: Booking.com + Agoda affiliate links (always generated, no CSV dependency)
+  if (shouldShowBookingCta(place.niche)) {
+    out.push({ label: "Check on Booking.com", href: bookingSearchUrl(place), primary: out.length === 0 });
+    out.push({ label: "Compare on Agoda", href: agodaSearchUrl(place) });
+  } else if ((place.niche === "muslim-hotel" || place.niche === "halal-tour") && place.affiliate.agoda) {
+    out.push({ label: t("cta_book_agoda", lang), href: place.affiliate.agoda });
   }
   if (place.affiliate.bookimed) out.push({ label: "Get Free Quote", href: place.affiliate.bookimed, primary: true });
   if (out.length === 0) return null;
@@ -273,6 +278,86 @@ export default async function PlaceDetailPage({ params }: { params: { lang: Lang
         </div>
       </section>
 
+      {/* ========== QUICK VERDICT + ACTION ROW ========== */}
+      {/* Above-the-fold density: 3-stat tiles + mobile action buttons.
+          Sits half-over the hero (-mt) so it's the first thing eyes hit. */}
+      <section className="relative z-10 mx-auto -mt-12 max-w-5xl px-4 sm:px-6">
+        <div className="grid gap-3 sm:grid-cols-[1.6fr_1fr]">
+          {/* Stat tiles */}
+          <div className="grid grid-cols-3 gap-2 sm:gap-3">
+            <div className="card-editorial bg-white p-3 text-center dark:bg-ink-900 sm:p-4">
+              <div className="text-[9px] uppercase tracking-wider muted sm:text-[10px]">Trust</div>
+              <div className={`font-display text-xl font-black tabular-nums sm:text-3xl ${tierColor}`}>
+                {place.trust_score}
+                <span className="text-xs font-bold muted">/100</span>
+              </div>
+              {place.negative_trust_penalty && place.negative_trust_penalty > 0 ? (
+                <div className="text-[9px] font-bold text-rose-600 dark:text-rose-400">
+                  −{place.negative_trust_penalty} penalty
+                </div>
+              ) : null}
+            </div>
+            <div className="card-editorial bg-white p-3 text-center dark:bg-ink-900 sm:p-4">
+              <div className="text-[9px] uppercase tracking-wider muted sm:text-[10px]">Sources</div>
+              <div className="font-display text-xl font-black text-islam-900 dark:text-islam-100 sm:text-3xl">
+                {sources.length}<span className="text-xs font-bold muted">/8</span>
+              </div>
+              <div className="text-[9px] muted">cross-verified</div>
+            </div>
+            <div className="card-editorial bg-white p-3 text-center dark:bg-ink-900 sm:p-4">
+              <div className="text-[9px] uppercase tracking-wider muted sm:text-[10px]">Halal</div>
+              <div className="font-display text-xl font-black text-gold-700 dark:text-gold-300 sm:text-3xl">
+                {place.halal_signal_count || (place.is_halal_signaled ? 1 : 0)}
+              </div>
+              <div className="text-[9px] muted">{place.cicot_mentioned ? "+ CICOT" : "signals"}</div>
+            </div>
+          </div>
+
+          {/* Mobile-first action buttons */}
+          <div className="grid grid-cols-3 gap-2">
+            {place.phone ? (
+              <a
+                href={`tel:${place.phone.replace(/[^\d+]/g, "")}`}
+                className="flex flex-col items-center justify-center rounded-xl border border-islam-200 bg-white py-3 text-[11px] font-bold text-islam-900 transition hover:border-islam-400 hover:bg-islam-50 dark:border-islam-800 dark:bg-ink-900 dark:text-islam-100 dark:hover:bg-islam-950/40"
+              >
+                <span className="text-lg" aria-hidden="true">📞</span>
+                <span className="mt-0.5">Call</span>
+              </a>
+            ) : (
+              <div className="flex flex-col items-center justify-center rounded-xl border border-ink-100 bg-ink-50 py-3 text-[11px] font-bold muted dark:border-ink-800 dark:bg-ink-900/40">
+                <span className="text-lg opacity-30" aria-hidden="true">📞</span>
+                <span className="mt-0.5">No phone</span>
+              </div>
+            )}
+            <a
+              href={place.google_maps_url || `https://maps.google.com/maps?q=${encodeURIComponent(place.address || place.name)}`}
+              target="_blank"
+              rel="noopener"
+              className="flex flex-col items-center justify-center rounded-xl border border-gold-300 bg-gold-50 py-3 text-[11px] font-bold text-gold-900 transition hover:border-gold-500 hover:bg-gold-100 dark:border-gold-700 dark:bg-gold-950/30 dark:text-gold-200"
+            >
+              <span className="text-lg" aria-hidden="true">📍</span>
+              <span className="mt-0.5">Maps</span>
+            </a>
+            {place.website ? (
+              <a
+                href={place.website}
+                target="_blank"
+                rel="nofollow noopener"
+                className="flex flex-col items-center justify-center rounded-xl border border-islam-200 bg-white py-3 text-[11px] font-bold text-islam-900 transition hover:border-islam-400 hover:bg-islam-50 dark:border-islam-800 dark:bg-ink-900 dark:text-islam-100 dark:hover:bg-islam-950/40"
+              >
+                <span className="text-lg" aria-hidden="true">🔗</span>
+                <span className="mt-0.5">Website</span>
+              </a>
+            ) : (
+              <div className="flex flex-col items-center justify-center rounded-xl border border-ink-100 bg-ink-50 py-3 text-[11px] font-bold muted dark:border-ink-800 dark:bg-ink-900/40">
+                <span className="text-lg opacity-30" aria-hidden="true">🔗</span>
+                <span className="mt-0.5">No site</span>
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+
       {/* ========== EDITORIAL ARTICLE BODY ========== */}
       <main className="mx-auto max-w-5xl px-4 pb-28 sm:px-6 md:pb-20">
         <div className="grid gap-10 lg:grid-cols-[1fr_320px] lg:gap-12">
@@ -303,6 +388,35 @@ export default async function PlaceDetailPage({ params }: { params: { lang: Lang
               </div>
             )}
 
+            {/* MAP EMBED — free, no API key. Helps users locate before reading. */}
+            {(place.address || place.name) && (
+              <>
+                <div className="hr-editorial" />
+                <section>
+                  <div className="eyebrow mb-2">Where it is</div>
+                  <h2 className="h-display text-2xl text-islam-950 dark:text-islam-50">
+                    {place.city ? `Find it in ${place.city}` : "Find on map"}
+                  </h2>
+                  {place.address && (
+                    <p className="mt-2 text-sm text-ink-700 dark:text-ink-300">{place.address}</p>
+                  )}
+                  <div className="mt-4 overflow-hidden rounded-2xl border border-ink-100 dark:border-ink-800">
+                    <iframe
+                      src={`https://maps.google.com/maps?q=${encodeURIComponent(
+                        `${place.name}${place.address ? ", " + place.address : ""}${place.city ? ", " + place.city : ""}, Thailand`
+                      )}&output=embed`}
+                      width="100%"
+                      height="320"
+                      style={{ border: 0 }}
+                      loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
+                      title={`Map of ${place.name}`}
+                    />
+                  </div>
+                </section>
+              </>
+            )}
+
             <div className="hr-editorial" />
 
             {/* SOURCES BREAKDOWN */}
@@ -324,6 +438,62 @@ export default async function PlaceDetailPage({ params }: { params: { lang: Lang
                 ))}
               </div>
             </section>
+
+            {/* THINGS TO KNOW — negative signals (evidence-based honesty panel) */}
+            {place.negative_signals && place.negative_signals.length > 0 && (
+              <>
+                <div className="hr-editorial" />
+                <section>
+                  <div className="eyebrow mb-2 text-rose-700 dark:text-rose-400">
+                    Heads up — things to know
+                  </div>
+                  <h2 className="h-display text-2xl text-islam-950 dark:text-islam-50">
+                    {place.negative_signals.length === 1
+                      ? "1 thing muslim travelers should know"
+                      : `${place.negative_signals.length} things muslim travelers should know`}
+                  </h2>
+                  <p className="mt-2 text-sm muted">
+                    Detected from public data. Each item is evidence-based — we cite where
+                    the signal came from, not opinion. Verify in person before deciding.
+                  </p>
+                  <ul className="mt-5 space-y-3">
+                    {place.negative_signals.slice(0, 6).map((s, i) => {
+                      const sevColor =
+                        s.severity === "critical" ? "border-rose-500 bg-rose-50 dark:bg-rose-950/30" :
+                        s.severity === "high"     ? "border-orange-500 bg-orange-50 dark:bg-orange-950/30" :
+                        s.severity === "medium"   ? "border-amber-500 bg-amber-50 dark:bg-amber-950/30" :
+                                                    "border-ink-300 bg-ink-50 dark:bg-ink-900";
+                      const sevText =
+                        s.severity === "critical" ? "text-rose-900 dark:text-rose-200" :
+                        s.severity === "high"     ? "text-orange-900 dark:text-orange-200" :
+                        s.severity === "medium"   ? "text-amber-900 dark:text-amber-200" :
+                                                    "text-ink-800 dark:text-ink-200";
+                      const label = s.type.replace(/_/g, " ");
+                      return (
+                        <li key={i} className={`rounded-xl border-l-4 px-4 py-3 ${sevColor}`}>
+                          <div className={`flex items-baseline gap-2 text-xs font-bold uppercase tracking-wider ${sevText}`}>
+                            <span>{s.severity}</span>
+                            <span className="opacity-60">·</span>
+                            <span className="opacity-80">{label}</span>
+                          </div>
+                          <div className={`mt-1.5 text-sm leading-snug ${sevText}`}>
+                            {s.evidence_text}
+                          </div>
+                          {s.snippet && (
+                            <div className="mt-1.5 text-xs italic opacity-70">
+                              "{s.snippet.length > 140 ? s.snippet.slice(0, 140) + "…" : s.snippet}"
+                            </div>
+                          )}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                  <p className="mt-4 text-xs muted">
+                    Other halal directories don't surface these. We do — so your trip stays planned.
+                  </p>
+                </section>
+              </>
+            )}
 
             {/* TOP REVIEW */}
             {place.top_review_text && (
