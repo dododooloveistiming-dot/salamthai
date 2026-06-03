@@ -327,6 +327,11 @@ function PlaceCard({ p, lang, fallbackEmoji: _emoji }: { p: PlaceLite; lang: Lan
               🇸🇦 {p.arabic_review_count} Arabic
             </span>
           )}
+          {p.has_youtube_comments && p.youtube_comment_count && p.youtube_comment_count > 0 && (
+            <span className="rounded-full bg-rose-100 px-2 py-0.5 font-medium text-rose-700 dark:bg-rose-900/40 dark:text-rose-300">
+              ▶ {p.youtube_comment_count} YT
+            </span>
+          )}
           {p.is_suspected_viral && (
             <span className="rounded-full bg-orange-100 px-2 py-0.5 font-medium text-orange-700 dark:bg-orange-900/40 dark:text-orange-300">
               ⚠ low signal

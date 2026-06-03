@@ -333,6 +333,10 @@ function normalize(r, niche) {
     arabic_reviews: safeJson(r.arabic_reviews_json, []),
     arabic_review_count: num(r.arabic_review_count),
     has_arabic_reviews: bool(r.has_arabic_reviews),
+    // YouTube viewer comments (yt-dlp scrape, multi-lang muslim keywords)
+    youtube_comments: safeJson(r.youtube_comments_json, []),
+    youtube_comment_count: num(r.youtube_comment_count),
+    has_youtube_comments: bool(r.has_youtube_comments),
   };
 }
 

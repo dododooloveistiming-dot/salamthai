@@ -104,6 +104,9 @@ export interface PlaceLite {
   // GCC Arabic-review badge for cards (true if ≥1 Arabic review on Booking)
   has_arabic_reviews?: boolean;
   arabic_review_count?: number;
+  // YouTube viewer-comment badge
+  has_youtube_comments?: boolean;
+  youtube_comment_count?: number;
 }
 
 export interface Place {
@@ -161,6 +164,10 @@ export interface Place {
   arabic_reviews?: ArabicReview[];      // top 5
   arabic_review_count?: number;          // total found
   has_arabic_reviews?: boolean;
+  // YouTube viewer comments mentioning muslim/halal keywords
+  youtube_comments?: YouTubeComment[];   // top 5
+  youtube_comment_count?: number;
+  has_youtube_comments?: boolean;
 }
 
 export interface NegativeSignal {
@@ -182,6 +189,18 @@ export interface ArabicReview {
   title_negative?: string;
   posted_date: string;
   booking_url: string;
+}
+
+export interface YouTubeComment {
+  video_id: string;
+  video_title: string;
+  channel: string;
+  author: string;
+  text: string;
+  likes: number;
+  lang: string;            // 'en' | 'ko' | 'th' | 'ar' | 'zh' | 'ja_kana'
+  muslim_keywords: string[];
+  posted_at: string;
 }
 
 export interface CommunityThread {

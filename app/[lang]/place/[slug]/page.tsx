@@ -668,6 +668,78 @@ export default async function PlaceDetailPage({ params }: { params: { lang: Lang
               </>
             )}
 
+            {/* YOUTUBE VIEWER COMMENTS — multi-lang muslim-keyword filtered */}
+            {place.youtube_comments && place.youtube_comments.length > 0 && (
+              <>
+                <div className="hr-editorial" />
+                <section>
+                  <div className="eyebrow mb-2 text-rose-700 dark:text-rose-400">
+                    ▶ YouTube viewer voices
+                  </div>
+                  <h2 className="h-display text-2xl text-islam-950 dark:text-islam-50">
+                    What viewers commented
+                    {place.youtube_comment_count && place.youtube_comment_count > place.youtube_comments.length ? (
+                      <span className="ml-2 text-base font-normal muted">
+                        ({place.youtube_comment_count.toLocaleString()} total)
+                      </span>
+                    ) : null}
+                  </h2>
+                  <p className="mt-2 text-sm muted">
+                    Pulled from YouTube vlogger comment threads — only comments mentioning
+                    muslim/halal/prayer keywords. Multi-lang, voted by likes.
+                  </p>
+
+                  <ul className="mt-5 space-y-3">
+                    {place.youtube_comments.slice(0, 5).map((c, i) => {
+                      const langFlag =
+                        c.lang === "ko" ? "🇰🇷" :
+                        c.lang === "th" ? "🇹🇭" :
+                        c.lang === "ar" ? "🇸🇦" :
+                        c.lang === "zh" ? "🇨🇳" :
+                        c.lang === "ja_kana" ? "🇯🇵" : "🇬🇧";
+                      const isRtl = c.lang === "ar";
+                      return (
+                        <li key={i} className="card-editorial p-4">
+                          <div className="flex flex-wrap items-baseline gap-2 text-xs muted">
+                            <span aria-hidden="true">{langFlag}</span>
+                            <span className="font-semibold text-islam-900 dark:text-islam-100">
+                              {c.author || "viewer"}
+                            </span>
+                            {c.likes > 0 && (
+                              <>
+                                <span aria-hidden="true">·</span>
+                                <span>👍 {c.likes.toLocaleString()}</span>
+                              </>
+                            )}
+                            <span aria-hidden="true">·</span>
+                            <span className="line-clamp-1 italic opacity-70">
+                              on "{c.video_title}"
+                            </span>
+                          </div>
+                          <p
+                            className={`mt-2 text-sm leading-relaxed text-ink-700 dark:text-ink-300 ${isRtl ? "font-arabic" : ""}`}
+                            dir={isRtl ? "rtl" : "ltr"}
+                          >
+                            {c.text}
+                          </p>
+                          {c.video_id && (
+                            <a
+                              href={`https://www.youtube.com/watch?v=${c.video_id}`}
+                              target="_blank"
+                              rel="nofollow noopener"
+                              className="mt-2 inline-block text-[11px] muted underline-offset-2 hover:underline"
+                            >
+                              See on YouTube →
+                            </a>
+                          )}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </section>
+              </>
+            )}
+
             {/* COMMUNITY MENTIONS — strict relevance filter */}
             {(() => {
               if (!place.community_mentions || place.community_mentions.length === 0) return null;
