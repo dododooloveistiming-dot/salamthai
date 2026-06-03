@@ -27,14 +27,23 @@ export function generateStaticParams() {
   return params;
 }
 
+/** Low-confidence pages are kept browsable but excluded from search indexing
+ *  to protect overall site quality scores. */
+function isLowConfidence(place: Place): boolean {
+  const halalCount = place.halal_signal_count || 0;
+  return place.trust_score < 30 || (halalCount === 0 && !place.is_halal_signaled);
+}
+
 export async function generateMetadata({ params }: { params: { lang: Lang; slug: string } }): Promise<Metadata> {
   const place = getPlaceBySlug(params.slug);
   if (!place) return {};
   const url = `${SITE.origin}/${params.lang}/place/${place.slug}/`;
   const cat = nicheName(place.niche, params.lang);
+  const lowConfidence = isLowConfidence(place);
   return {
     title: `${place.name} — ${cat} | ${SITE.name}`,
     description: `${place.city ? place.city + ". " : ""}Trust Score ${place.trust_score}/100, cross-checked across ${countSources(place)} sources. ${t("sources_pitch", params.lang)}.`,
+    robots: lowConfidence ? { index: false, follow: true } : undefined,
     alternates: {
       canonical: url,
       languages: Object.fromEntries(SUPPORTED_LANGS.map((l) => [l, `${SITE.origin}/${l}/place/${place.slug}/`])),
@@ -50,6 +59,10 @@ export async function generateMetadata({ params }: { params: { lang: Lang; slug:
 
 function countSources(p: Place): number {
   return Object.values(p.source_badges).filter((v) => v > 0).length;
+}
+
+function sourcesShort(p: Place): number {
+  return countSources(p);
 }
 
 function trustTier(score: number): "high" | "mid" | "low" {
@@ -112,6 +125,8 @@ export default async function PlaceDetailPage({ params }: { params: { lang: Lang
   const meta = NICHE_META[place.niche];
   const cat = nicheName(place.niche, lang);
   const tier = trustTier(place.trust_score);
+  const lowConfidence = isLowConfidence(place);
+  const halalCount = place.halal_signal_count || 0;
   const tierColor =
     tier === "high" ? "text-islam-700 dark:text-islam-300" :
     tier === "mid"  ? "text-gold-700 dark:text-gold-300" :
@@ -314,10 +329,23 @@ export default async function PlaceDetailPage({ params }: { params: { lang: Lang
             </div>
             <div className="card-editorial bg-white p-3 text-center dark:bg-ink-900 sm:p-4">
               <div className="text-[9px] uppercase tracking-wider muted sm:text-[10px]">Halal</div>
-              <div className="font-display text-xl font-black text-gold-700 dark:text-gold-300 sm:text-3xl">
-                {place.halal_signal_count || (place.is_halal_signaled ? 1 : 0)}
-              </div>
-              <div className="text-[9px] muted">{place.cicot_mentioned ? "+ CICOT" : "signals"}</div>
+              {halalCount > 0 || place.is_halal_signaled ? (
+                <>
+                  <div className="font-display text-xl font-black text-gold-700 dark:text-gold-300 sm:text-3xl">
+                    {halalCount || 1}
+                  </div>
+                  <div className="text-[9px] muted">{place.cicot_mentioned ? "+ CICOT" : "signals"}</div>
+                </>
+              ) : (
+                <>
+                  <div className="font-display text-xl font-black text-ink-400 dark:text-ink-600 sm:text-3xl">
+                    —
+                  </div>
+                  <div className="text-[9px] muted text-rose-700 dark:text-rose-400">
+                    none detected
+                  </div>
+                </>
+              )}
             </div>
           </div>
 
@@ -365,6 +393,33 @@ export default async function PlaceDetailPage({ params }: { params: { lang: Lang
           </div>
         </div>
       </section>
+
+      {/* ========== LIMITED INFO BANNER (low-confidence pages) ========== */}
+      {lowConfidence && (
+        <section className="mx-auto mt-8 max-w-5xl px-4 sm:px-6">
+          <div className="rounded-2xl border-l-4 border-amber-500 bg-amber-50 px-5 py-4 dark:border-amber-600 dark:bg-amber-950/30">
+            <div className="flex items-baseline gap-2 text-xs font-bold uppercase tracking-widest text-amber-800 dark:text-amber-300">
+              <span>⚠ Limited information</span>
+            </div>
+            <p className="mt-2 text-sm leading-relaxed text-amber-900 dark:text-amber-200">
+              {halalCount === 0 && !place.is_halal_signaled
+                ? `We couldn't detect explicit halal signals (CICOT cert, prayer room mentions, etc.) in the public data for this place. `
+                : ""}
+              {place.trust_score < 30
+                ? `Trust score is ${place.trust_score}/100 — based on only ${sourcesShort(place)} verifying source${sourcesShort(place) === 1 ? "" : "s"}. `
+                : ""}
+              Verify in person before relying on this listing. We list every cross-referenced place
+              for completeness — but transparency about confidence matters more than padding numbers.
+            </p>
+            <Link
+              href={`/${lang}/how-we-verify/`}
+              className="mt-2 inline-block text-xs font-bold text-amber-900 underline-offset-2 hover:underline dark:text-amber-200"
+            >
+              How we score →
+            </Link>
+          </div>
+        </section>
+      )}
 
       {/* ========== EDITORIAL ARTICLE BODY ========== */}
       <main className="mx-auto max-w-5xl px-4 pb-28 sm:px-6 md:pb-20">

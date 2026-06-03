@@ -220,6 +220,7 @@ export default function CategoryPage({ params }: { params: { lang: Lang; niche: 
                       niche={featured.niche}
                       name={featured.name}
                       slug={featured.slug}
+                      photoUrl={featured.top_photo_url}
                       trustScore={featured.trust_score}
                       sourceCount={Object.values(featured.source_badges).filter((v) => v > 0).length}
                       halalSignals={featured.halal_signals_detected}
@@ -303,6 +304,7 @@ export default function CategoryPage({ params }: { params: { lang: Lang; niche: 
                               niche={p.niche}
                               name={p.name}
                               slug={p.slug}
+                              photoUrl={p.top_photo_url}
                               trustScore={p.trust_score}
                               halalSignals={p.halal_signals_detected}
                               languages={p.languages}
@@ -363,6 +365,7 @@ export default function CategoryPage({ params }: { params: { lang: Lang; niche: 
                                   niche={p.niche}
                                   name={p.name}
                                   slug={p.slug}
+                                  photoUrl={p.top_photo_url}
                                   trustScore={p.trust_score}
                                   halalSignals={p.halal_signals_detected}
                                   languages={p.languages}

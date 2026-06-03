@@ -264,6 +264,7 @@ function PlaceCard({ p, lang, fallbackEmoji: _emoji }: { p: PlaceLite; lang: Lan
           niche={p.niche}
           name={p.name}
           slug={p.slug}
+          photoUrl={p.top_photo_url}
           trustScore={p.trust_score}
           sourceCount={p.source_count}
           halalSignals={p.halal_signals_detected}

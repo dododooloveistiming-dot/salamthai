@@ -262,6 +262,7 @@ export default function NicheWikiPage({ params }: { params: { lang: Lang; niche:
                         niche={p.niche}
                         name={p.name}
                         slug={p.slug}
+                        photoUrl={p.top_photo_url}
                         trustScore={p.trust_score}
                         languages={p.languages}
                         className="h-12 w-16"

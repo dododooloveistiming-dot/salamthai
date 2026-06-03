@@ -278,45 +278,126 @@ export default function NicheCityPage({ params }: { params: { lang: Lang; niche:
           </div>
         </section>
 
-        {/* TOP 5 STRIP */}
-        <section className="mt-10">
-          <div className="eyebrow mb-2">Highest trust in {cityEntry.name}</div>
-          <h2 className="h-display mb-5 text-2xl text-islam-950 dark:text-islam-50 sm:text-3xl">
-            Top {Math.min(5, top5.length)} {nicheLabel.toLowerCase()} ranked
-          </h2>
-          <ol className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
-            {top5.map((p, i) => (
-              <li key={p.id} className="card-editorial overflow-hidden">
-                <Link href={`/${lang}/place/${p.slug}/`} className="block">
-                  <div className="relative aspect-[4/3] w-full overflow-hidden">
+        {/* TOP PICKS — hierarchical: hero #1 + runners-up #2-5 */}
+        {top5.length > 0 && (() => {
+          const hero = top5[0];
+          const runners = top5.slice(1);
+          const heroSrcCount = Object.values(hero.source_badges).filter((v) => v > 0).length;
+          return (
+            <section className="mt-12">
+              <div className="eyebrow mb-2">Editor's pick · highest trust in {cityEntry.name}</div>
+              <h2 className="h-display mb-5 text-2xl text-islam-950 dark:text-islam-50 sm:text-3xl">
+                #1 — {hero.name}
+              </h2>
+
+              {/* TIER 1: Hero card for #1 — magazine-style spread */}
+              <Link
+                href={`/${lang}/place/${hero.slug}/`}
+                className="card-editorial group block overflow-hidden transition hover:border-gold-400 hover:shadow-lg"
+              >
+                <div className="grid md:grid-cols-[1.6fr_1fr]">
+                  <div className="relative aspect-[16/10] w-full overflow-hidden md:aspect-auto md:min-h-[320px]">
                     <PlacePhoto
-                      niche={p.niche}
-                      name={p.name}
-                      slug={p.slug}
-                      trustScore={p.trust_score}
-                      sourceCount={Object.values(p.source_badges).filter((v) => v > 0).length}
-                      halalSignals={p.halal_signals_detected}
-                      languages={p.languages}
+                      niche={hero.niche}
+                      name={hero.name}
+                      slug={hero.slug}
+                      photoUrl={hero.top_photo_url}
+                      trustScore={hero.trust_score}
+                      sourceCount={heroSrcCount}
+                      halalSignals={hero.halal_signals_detected}
+                      languages={hero.languages}
                       className="absolute inset-0 h-full w-full"
                       rounded=""
                     />
-                    <div className="absolute left-2 top-2 rounded-md bg-gold-500 px-2 py-0.5 text-[10px] font-black uppercase tracking-widest text-islam-950">
-                      #{i + 1}
+                    <div className="absolute left-3 top-3 rounded-md bg-gold-500 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-islam-950 shadow">
+                      ★ #1 PICK
                     </div>
                   </div>
-                  <div className="p-3">
-                    <div className="line-clamp-1 font-display text-sm font-bold text-islam-950 dark:text-islam-100">
-                      {p.name}
+                  <div className="flex flex-col justify-center gap-3 p-6 sm:p-8">
+                    <div className="text-[10px] uppercase tracking-widest text-gold-700 dark:text-gold-300">
+                      Highest trust score in {cityEntry.name}
                     </div>
-                    <div className="mt-1 text-[11px] muted">
-                      Trust {p.trust_score} · {p.rating ? `★ ${p.rating.toFixed(1)}` : "—"}
-                    </div>
+                    <h3 className="font-display text-2xl font-black leading-tight text-islam-950 dark:text-islam-50 sm:text-3xl">
+                      {hero.name}
+                    </h3>
+                    <dl className="grid grid-cols-3 gap-3 text-center">
+                      <div>
+                        <dt className="text-[9px] uppercase tracking-wider muted">Trust</dt>
+                        <dd className="font-display text-xl font-black text-islam-900 dark:text-islam-100">
+                          {hero.trust_score}
+                          <span className="text-xs muted">/100</span>
+                        </dd>
+                      </div>
+                      <div>
+                        <dt className="text-[9px] uppercase tracking-wider muted">Sources</dt>
+                        <dd className="font-display text-xl font-black text-islam-900 dark:text-islam-100">
+                          {heroSrcCount}<span className="text-xs muted">/8</span>
+                        </dd>
+                      </div>
+                      <div>
+                        <dt className="text-[9px] uppercase tracking-wider muted">Rating</dt>
+                        <dd className="font-display text-xl font-black text-gold-700 dark:text-gold-300">
+                          {hero.rating ? `★${hero.rating.toFixed(1)}` : "—"}
+                        </dd>
+                      </div>
+                    </dl>
+                    {hero.top_review_text && (
+                      <p className="line-clamp-3 text-sm italic muted">
+                        "{hero.top_review_text.slice(0, 200)}{hero.top_review_text.length > 200 ? "…" : ""}"
+                      </p>
+                    )}
+                    <span className="mt-1 inline-flex items-center gap-1 text-xs font-bold text-islam-900 group-hover:text-gold-700 dark:text-islam-100">
+                      Read the full profile <span aria-hidden="true">→</span>
+                    </span>
                   </div>
-                </Link>
-              </li>
-            ))}
-          </ol>
-        </section>
+                </div>
+              </Link>
+
+              {/* TIER 2: Runners-up — compact row of 4 */}
+              {runners.length > 0 && (
+                <div className="mt-8">
+                  <div className="eyebrow mb-3">Ranked by trust score</div>
+                  <h3 className="font-display mb-4 text-lg font-black text-islam-950 dark:text-islam-50">
+                    Top picks — runners-up
+                  </h3>
+                  <ol className="grid gap-3 grid-cols-2 lg:grid-cols-4">
+                    {runners.map((p, i) => (
+                      <li key={p.id} className="card-editorial overflow-hidden transition hover:border-gold-400">
+                        <Link href={`/${lang}/place/${p.slug}/`} className="block">
+                          <div className="relative aspect-[4/3] w-full overflow-hidden">
+                            <PlacePhoto
+                              niche={p.niche}
+                              name={p.name}
+                              slug={p.slug}
+                              photoUrl={p.top_photo_url}
+                              trustScore={p.trust_score}
+                              sourceCount={Object.values(p.source_badges).filter((v) => v > 0).length}
+                              halalSignals={p.halal_signals_detected}
+                              languages={p.languages}
+                              className="absolute inset-0 h-full w-full"
+                              rounded=""
+                            />
+                            <div className="absolute left-2 top-2 grid h-7 w-7 place-items-center rounded-full bg-islam-900 text-xs font-black text-white shadow">
+                              {i + 2}
+                            </div>
+                          </div>
+                          <div className="p-3">
+                            <div className="line-clamp-1 font-display text-sm font-bold text-islam-950 dark:text-islam-100">
+                              {p.name}
+                            </div>
+                            <div className="mt-1 flex items-center gap-1.5 text-[11px] muted">
+                              {p.city && <span>📍 {p.city}</span>}
+                            </div>
+                          </div>
+                        </Link>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              )}
+            </section>
+          );
+        })()}
 
         {/* FULL LIST — CategoryClient handles filter/search/sort. */}
         <section className="mt-14">

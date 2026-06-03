@@ -106,7 +106,9 @@ interface Props {
   niche: Niche | string;
   name: string;
   slug?: string;
-  /** Photo URL is currently ignored — placeholder always wins for visual consistency. */
+  /** Photo URL. When provided, overlays the placeholder. Falls back to
+   *  placeholder if image fails to load (browser shows nothing, we still
+   *  have the placeholder behind it). */
   photoUrl?: string | null;
   trustScore?: number;
   sourceCount?: number;        // 0..8
@@ -122,6 +124,7 @@ export default function PlacePhoto({
   niche,
   name,
   slug,
+  photoUrl,
   trustScore,
   sourceCount = 0,
   halalSignals,
@@ -169,15 +172,37 @@ export default function PlacePhoto({
         <rect width="100" height="100" fill={`url(#stars-${seed})`} />
       </svg>
 
-      {/* Layer 3 — Big initial letter (center) */}
+      {/* Layer 3 — Big initial letter (center) — only visible when no photo */}
       <div className="absolute inset-0 flex items-center justify-center">
         <span
           className={`font-display text-[7rem] font-black leading-none ${t.letter} drop-shadow-sm sm:text-[8rem]`}
           style={{ letterSpacing: "-0.05em" }}
+          aria-label={`First letter of ${name}`}
+          title={`No photo yet — showing first letter of ${name}`}
         >
           {initial}
         </span>
       </div>
+
+      {/* Layer 3.5 — Real photo (when available) — covers placeholder */}
+      {photoUrl && (
+        /* eslint-disable-next-line @next/next/no-img-element */
+        <img
+          src={photoUrl}
+          alt={name}
+          className="absolute inset-0 h-full w-full object-cover"
+          loading="lazy"
+          referrerPolicy="no-referrer"
+        />
+      )}
+
+      {/* Scrim — improves readability of badges when on top of photo */}
+      {photoUrl && (
+        <div
+          className="absolute inset-0 bg-gradient-to-t from-black/30 via-black/0 to-black/20"
+          aria-hidden="true"
+        />
+      )}
 
       {/* Layer 4a — Trust donut (top-right) */}
       {trustScore != null && trustScore > 0 && (
