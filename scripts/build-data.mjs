@@ -329,6 +329,10 @@ function normalize(r, niche) {
     cicot_cert_no: r.cicot_cert_no_extracted || "",
     cicot_mention_source: r.cicot_mention_source || "",
     cicot_mention_evidence: r.cicot_mention_evidence || "",
+    // GCC Arabic reviews (Booking scrape)
+    arabic_reviews: safeJson(r.arabic_reviews_json, []),
+    arabic_review_count: num(r.arabic_review_count),
+    has_arabic_reviews: bool(r.has_arabic_reviews),
   };
 }
 

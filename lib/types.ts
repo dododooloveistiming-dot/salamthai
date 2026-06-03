@@ -101,6 +101,9 @@ export interface PlaceLite {
   source_count: number;              // 0-8 distinct sources that verified
   has_affiliate: boolean;            // collapsed from full affiliate{} object
   languages: { en: boolean; ko: boolean; th: boolean; zh: boolean; ja: boolean; ar: boolean };
+  // GCC Arabic-review badge for cards (true if ≥1 Arabic review on Booking)
+  has_arabic_reviews?: boolean;
+  arabic_review_count?: number;
 }
 
 export interface Place {
@@ -154,6 +157,10 @@ export interface Place {
   cicot_cert_no?: string;
   cicot_mention_source?: string;
   cicot_mention_evidence?: string;
+  // GCC traveler Arabic reviews (Booking.com scrape)
+  arabic_reviews?: ArabicReview[];      // top 5
+  arabic_review_count?: number;          // total found
+  has_arabic_reviews?: boolean;
 }
 
 export interface NegativeSignal {
@@ -163,6 +170,18 @@ export interface NegativeSignal {
   evidence_text: string;   // human-readable evidence
   snippet?: string;        // surrounding context
   detected_at: string;     // ISO date
+}
+
+export interface ArabicReview {
+  reviewer: string;
+  country: string;         // reviewer country (often Saudi, UAE, etc.)
+  score: string;           // e.g., "8.5" (Booking 0-10)
+  positive: string;        // "what I liked"
+  negative: string;        // "what I disliked"
+  title_positive?: string;
+  title_negative?: string;
+  posted_date: string;
+  booking_url: string;
 }
 
 export interface CommunityThread {

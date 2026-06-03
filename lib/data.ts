@@ -41,6 +41,8 @@ export function toPlaceLite(p: Place): PlaceLite {
     source_count,
     has_affiliate: !!(a.klook || a.viator || a.getyourguide || a.agoda || a.bookimed),
     languages: p.languages,
+    has_arabic_reviews: p.has_arabic_reviews,
+    arabic_review_count: p.arabic_review_count,
   };
 }
 

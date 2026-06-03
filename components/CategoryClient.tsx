@@ -322,6 +322,11 @@ function PlaceCard({ p, lang, fallbackEmoji: _emoji }: { p: PlaceLite; lang: Lan
               ⚡ {t("bookable_label", lang)}
             </span>
           )}
+          {p.has_arabic_reviews && p.arabic_review_count && p.arabic_review_count > 0 && (
+            <span className="rounded-full bg-gold-100 px-2 py-0.5 font-medium text-gold-800 dark:bg-gold-900/40 dark:text-gold-200">
+              🇸🇦 {p.arabic_review_count} Arabic
+            </span>
+          )}
           {p.is_suspected_viral && (
             <span className="rounded-full bg-orange-100 px-2 py-0.5 font-medium text-orange-700 dark:bg-orange-900/40 dark:text-orange-300">
               ⚠ low signal

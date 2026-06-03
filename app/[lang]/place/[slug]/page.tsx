@@ -253,6 +253,14 @@ export default async function PlaceDetailPage({ params }: { params: { lang: Lang
             <span>{cat}</span>
             {place.city && (<><span className="text-white/60">·</span><span>{place.city}</span></>)}
             {place.is_halal_signaled && (<><span className="text-white/60">·</span><span className="text-gold-300">Halal signals detected</span></>)}
+            {place.has_arabic_reviews && place.arabic_review_count ? (
+              <>
+                <span className="text-white/60">·</span>
+                <span className="rounded-full bg-gold-500/20 px-2 py-0.5 text-gold-200">
+                  🇸🇦 {place.arabic_review_count} Arabic reviews
+                </span>
+              </>
+            ) : null}
           </div>
 
           <h1 className="h-display mt-3 max-w-4xl text-4xl text-white sm:text-6xl">
@@ -561,6 +569,101 @@ export default async function PlaceDetailPage({ params }: { params: { lang: Lang
                       </div>
                     ))}
                   </dl>
+                </section>
+              </>
+            )}
+
+            {/* GCC ARABIC REVIEWS — from Booking.com Arabic-locale scrape */}
+            {place.arabic_reviews && place.arabic_reviews.length > 0 && (
+              <>
+                <div className="hr-editorial" />
+                <section>
+                  <div className="eyebrow mb-2 text-gold-700 dark:text-gold-400">
+                    🇸🇦 GCC traveler voices
+                  </div>
+                  <h2 className="h-display text-2xl text-islam-950 dark:text-islam-50">
+                    What Arabic-speaking guests said
+                    {place.arabic_review_count && place.arabic_review_count > place.arabic_reviews.length ? (
+                      <span className="ml-2 text-base font-normal muted">
+                        ({place.arabic_review_count.toLocaleString()} total)
+                      </span>
+                    ) : null}
+                  </h2>
+                  <p className="mt-2 text-sm muted">
+                    Pulled from Booking.com Arabic-locale reviews. Real GCC and Arab-speaking
+                    travelers — the kind of voice English-only halal directories never surface.
+                  </p>
+
+                  <ol className="mt-5 space-y-4">
+                    {place.arabic_reviews.slice(0, 5).map((rv, i) => (
+                      <li
+                        key={i}
+                        className="rounded-2xl border border-gold-200/60 bg-gradient-to-br from-gold-50/70 via-white to-white p-5 shadow-sm dark:border-gold-700/40 dark:from-gold-950/30 dark:via-ink-900 dark:to-ink-900"
+                      >
+                        <div className="flex items-baseline gap-2 text-xs muted">
+                          <span className="font-semibold text-islam-900 dark:text-islam-100">
+                            {rv.reviewer || "Booking guest"}
+                          </span>
+                          {rv.country && (
+                            <>
+                              <span aria-hidden="true">·</span>
+                              <span>{rv.country}</span>
+                            </>
+                          )}
+                          {rv.score && (
+                            <>
+                              <span aria-hidden="true">·</span>
+                              <span className="text-gold-700 dark:text-gold-300">
+                                Booking score {rv.score}/10
+                              </span>
+                            </>
+                          )}
+                          {rv.posted_date && (
+                            <>
+                              <span aria-hidden="true">·</span>
+                              <span>{rv.posted_date}</span>
+                            </>
+                          )}
+                        </div>
+
+                        {rv.positive && (
+                          <div className="mt-3" dir="rtl" lang="ar">
+                            {rv.title_positive && (
+                              <div className="font-arabic text-base font-bold text-islam-900 dark:text-islam-100">
+                                {rv.title_positive}
+                              </div>
+                            )}
+                            <p className="mt-1 font-arabic text-sm leading-relaxed text-ink-800 dark:text-ink-200">
+                              {rv.positive}
+                            </p>
+                          </div>
+                        )}
+                        {rv.negative && (
+                          <div className="mt-3 border-t border-ink-200/60 pt-3 dark:border-ink-700/60" dir="rtl" lang="ar">
+                            {rv.title_negative && (
+                              <div className="font-arabic text-sm font-bold text-rose-700 dark:text-rose-400">
+                                ⚠ {rv.title_negative}
+                              </div>
+                            )}
+                            <p className="mt-1 font-arabic text-sm leading-relaxed text-ink-600 dark:text-ink-400">
+                              {rv.negative}
+                            </p>
+                          </div>
+                        )}
+                      </li>
+                    ))}
+                  </ol>
+
+                  {place.arabic_reviews[0]?.booking_url && (
+                    <a
+                      href={place.arabic_reviews[0].booking_url}
+                      target="_blank"
+                      rel="nofollow sponsored noopener"
+                      className="mt-5 inline-flex items-center gap-2 text-xs font-bold text-islam-900 underline-offset-4 hover:underline dark:text-islam-100"
+                    >
+                      See all Arabic reviews on Booking.com →
+                    </a>
+                  )}
                 </section>
               </>
             )}
