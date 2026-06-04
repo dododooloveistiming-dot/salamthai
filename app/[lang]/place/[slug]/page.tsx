@@ -11,6 +11,7 @@ import BookingForm from "@/components/BookingForm";
 import PrayerTimes from "@/components/PrayerTimes";
 import { CITIES } from "@/lib/wiki-registry";
 import { bookingSearchUrl, agodaSearchUrl, shouldShowBookingCta } from "@/lib/booking-affiliate";
+import PhotoGallery from "@/components/PhotoGallery";
 
 // Static-with-revalidate: page HTML is pre-rendered for SEO crawlers, but
 // rebuilds every 12h so the embedded daily Prayer Times widget stays fresh.
@@ -46,7 +47,10 @@ export async function generateMetadata({ params }: { params: { lang: Lang; slug:
     robots: lowConfidence ? { index: false, follow: true } : undefined,
     alternates: {
       canonical: url,
-      languages: Object.fromEntries(SUPPORTED_LANGS.map((l) => [l, `${SITE.origin}/${l}/place/${place.slug}/`])),
+      languages: {
+        ...Object.fromEntries(SUPPORTED_LANGS.map((l) => [l, `${SITE.origin}/${l}/place/${place.slug}/`])),
+        "x-default": `${SITE.origin}/en/place/${place.slug}/`,
+      },
     },
     openGraph: {
       title: place.name,
@@ -588,7 +592,7 @@ export default async function PlaceDetailPage({ params }: { params: { lang: Lang
               </>
             )}
 
-            {/* PHOTOS */}
+            {/* PHOTOS — gallery + lightbox */}
             {place.photos_sample.length > 0 && (
               <>
                 <div className="hr-editorial" />
@@ -597,13 +601,8 @@ export default async function PlaceDetailPage({ params }: { params: { lang: Lang
                   <h2 className="h-display text-2xl text-islam-950 dark:text-islam-50">
                     Gallery <span className="text-base font-normal muted">({place.photos_count})</span>
                   </h2>
-                  <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
-                    {place.photos_sample.slice(0, 6).map((url, i) => (
-                      <div key={i} className="aspect-[4/3] overflow-hidden rounded-xl bg-ink-50 ring-1 ring-ink-100 dark:bg-ink-800 dark:ring-ink-800">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={url} alt="" className="h-full w-full object-cover transition duration-300 hover:scale-105" loading="lazy" />
-                      </div>
-                    ))}
+                  <div className="mt-5">
+                    <PhotoGallery photos={place.photos_sample} alt={place.name} preview={6} />
                   </div>
                 </section>
               </>
@@ -1087,6 +1086,28 @@ export default async function PlaceDetailPage({ params }: { params: { lang: Lang
                       guide, city handbook, and related encyclopedia entries.
                     </p>
                     <ul className="grid gap-3 sm:grid-cols-2">
+                      {/* THIS niche × THIS city — the most relevant landing */}
+                      {cityEntry && (
+                        <li>
+                          <Link
+                            href={`/${lang}/c/${place.niche}/${cityEntry.slug}/`}
+                            className="card-editorial group flex items-center gap-3 p-4 transition hover:border-gold-400"
+                          >
+                            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-gold-50 to-amber-100 text-xl dark:from-gold-950/40 dark:to-amber-950/30">
+                              📍
+                            </span>
+                            <div className="min-w-0 flex-1">
+                              <div className="text-[10px] uppercase tracking-widest text-gold-800 dark:text-gold-300">
+                                More like this
+                              </div>
+                              <div className="font-display text-sm font-bold text-islam-950 dark:text-islam-50">
+                                All {cat.toLowerCase()} in {cityEntry.name}
+                              </div>
+                            </div>
+                            <span className="text-gold-700 transition group-hover:translate-x-1 dark:text-gold-400" aria-hidden="true">→</span>
+                          </Link>
+                        </li>
+                      )}
                       <li>
                         <Link
                           href={`/${lang}/wiki/niche/${place.niche}/`}

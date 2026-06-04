@@ -104,7 +104,10 @@ export async function generateMetadata({ params }: { params: { lang: Lang; niche
     description,
     alternates: {
       canonical: url,
-      languages: Object.fromEntries(SUPPORTED_LANGS.map((l) => [l, `${SITE.origin}/${l}/c/${niche}/${city}/`])),
+      languages: {
+        ...Object.fromEntries(SUPPORTED_LANGS.map((l) => [l, `${SITE.origin}/${l}/c/${niche}/${city}/`])),
+        "x-default": `${SITE.origin}/en/c/${niche}/${city}/`,
+      },
     },
     openGraph: { title, description, url },
   };
@@ -432,8 +435,31 @@ export default function NicheCityPage({ params }: { params: { lang: Lang; niche:
           </p>
         </section>
 
-        {/* CROSS-LINKS to other cities of same niche */}
+        {/* WIKI CITY GUIDE LINK — connect listing to editorial city guide */}
         <section className="mt-16">
+          <Link
+            href={`/${lang}/wiki/city/${cityEntry.slug}/`}
+            className="card-editorial group flex items-center gap-4 p-5 transition hover:border-gold-400"
+          >
+            <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-rose-50 to-amber-50 text-2xl dark:from-rose-950/30 dark:to-amber-950/30">
+              📖
+            </span>
+            <div className="min-w-0 flex-1">
+              <div className="text-[10px] uppercase tracking-widest text-gold-800 dark:text-gold-300">
+                Long-form city guide
+              </div>
+              <div className="font-display text-base font-bold text-islam-950 dark:text-islam-50">
+                Read the {cityEntry.name} muslim travel wiki →
+              </div>
+              <div className="mt-1 text-xs muted">
+                Demographics, areas, mosques, eating-out culture, travel tips.
+              </div>
+            </div>
+          </Link>
+        </section>
+
+        {/* CROSS-LINKS to other cities of same niche */}
+        <section className="mt-12">
           <div className="eyebrow mb-2">Same category, other cities</div>
           <h2 className="h-display mb-5 text-xl text-islam-950 dark:text-islam-50">
             {nicheLabel} elsewhere in Thailand

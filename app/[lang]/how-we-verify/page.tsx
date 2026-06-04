@@ -28,7 +28,10 @@ export function generateMetadata({ params }: { params: { lang: Lang } }): Metada
     description,
     alternates: {
       canonical: url,
-      languages: Object.fromEntries(SUPPORTED_LANGS.map((l) => [l, `${SITE.origin}/${l}/how-we-verify/`])),
+      languages: {
+        ...Object.fromEntries(SUPPORTED_LANGS.map((l) => [l, `${SITE.origin}/${l}/how-we-verify/`])),
+        "x-default": `${SITE.origin}/en/how-we-verify/`,
+      },
     },
     openGraph: { title, description, url },
   };

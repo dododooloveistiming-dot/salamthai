@@ -38,7 +38,10 @@ export async function generateMetadata({ params }: { params: { lang: Lang; niche
     description,
     alternates: {
       canonical: url,
-      languages: Object.fromEntries(SUPPORTED_LANGS.map((l) => [l, `${SITE.origin}/${l}/c/${niche}/`])),
+      languages: {
+        ...Object.fromEntries(SUPPORTED_LANGS.map((l) => [l, `${SITE.origin}/${l}/c/${niche}/`])),
+        "x-default": `${SITE.origin}/en/c/${niche}/`,
+      },
     },
     openGraph: { title, description, url },
   };

@@ -44,7 +44,10 @@ export async function generateMetadata({ params }: { params: { lang: Lang; slug:
     description: content.intro.slice(0, 200),
     alternates: {
       canonical: `${SITE.origin}/${lang}/wiki/topic/${slug}/`,
-      languages: Object.fromEntries(SUPPORTED_LANGS.map((l) => [l, `${SITE.origin}/${l}/wiki/topic/${slug}/`])),
+      languages: {
+        ...Object.fromEntries(SUPPORTED_LANGS.map((l) => [l, `${SITE.origin}/${l}/wiki/topic/${slug}/`])),
+        "x-default": `${SITE.origin}/en/wiki/topic/${slug}/`,
+      },
     },
   };
 }

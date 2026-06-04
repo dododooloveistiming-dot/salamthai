@@ -1,10 +1,18 @@
 "use client";
 import type { Lang, Place } from "@/lib/types";
 import { t } from "@/lib/i18n";
+import { bookingSearchUrl, shouldShowBookingCta } from "@/lib/booking-affiliate";
 
 type Primary = { label: string; href: string; tone: string };
 
 function pickPrimary(place: Place, lang: Lang): Primary | null {
+  // Hotel/tour niches: prefer Booking.com (revenue-generating affiliate)
+  if (shouldShowBookingCta(place.niche))
+    return {
+      label: "Check on Booking.com",
+      href: bookingSearchUrl(place, "salaam-mobile"),
+      tone: "bg-blue-700 hover:bg-blue-800",
+    };
   if (place.affiliate.klook)
     return { label: t("cta_book_klook", lang), href: place.affiliate.klook, tone: "bg-rose-600 hover:bg-rose-700" };
   if (place.affiliate.viator)
