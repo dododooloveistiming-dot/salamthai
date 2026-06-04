@@ -333,6 +333,11 @@ function PlaceCard({ p, lang, fallbackEmoji: _emoji }: { p: PlaceLite; lang: Lan
               ▶ {p.youtube_comment_count} YT
             </span>
           )}
+          {p.has_osm && (
+            <span className="rounded-full bg-emerald-100 px-2 py-0.5 font-medium text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
+              🌍 OSM
+            </span>
+          )}
           {p.is_suspected_viral && (
             <span className="rounded-full bg-orange-100 px-2 py-0.5 font-medium text-orange-700 dark:bg-orange-900/40 dark:text-orange-300">
               ⚠ low signal

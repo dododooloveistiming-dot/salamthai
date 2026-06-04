@@ -107,6 +107,8 @@ export interface PlaceLite {
   // YouTube viewer-comment badge
   has_youtube_comments?: boolean;
   youtube_comment_count?: number;
+  // OSM verified badge
+  has_osm?: boolean;
 }
 
 export interface Place {
@@ -168,6 +170,26 @@ export interface Place {
   youtube_comments?: YouTubeComment[];   // top 5
   youtube_comment_count?: number;
   has_youtube_comments?: boolean;
+  // OpenStreetMap enrichment — community-edited public data
+  osm?: OsmData;
+  has_osm?: boolean;
+}
+
+export interface OsmData {
+  id: string;
+  type: string;                 // 'node' | 'way' | 'relation'
+  opening_hours?: string;
+  cuisine?: string;
+  phone?: string;
+  email?: string;
+  website?: string;
+  wheelchair?: string;          // 'yes' | 'no' | 'limited' | etc.
+  internet_access?: string;     // 'yes' | 'wifi' | 'no'
+  diet_halal?: string;          // 'yes' | 'only' | 'no'
+  amenity?: string;
+  religion?: string;            // mosques → 'muslim'
+  /** raw tags JSON — keeps everything OSM has, surfaced on demand */
+  tags_json?: string;
 }
 
 export interface NegativeSignal {

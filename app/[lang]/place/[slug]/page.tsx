@@ -723,6 +723,73 @@ export default async function PlaceDetailPage({ params }: { params: { lang: Lang
               </>
             )}
 
+            {/* OPENSTREETMAP — community-edited public data verification */}
+            {place.osm && place.osm.id && (() => {
+              const osm = place.osm!;
+              const facts: { k: string; v: string; icon: string }[] = [];
+              if (osm.opening_hours) facts.push({ k: "Hours", v: osm.opening_hours, icon: "🕐" });
+              if (osm.cuisine) facts.push({ k: "Cuisine", v: osm.cuisine.replace(/_/g, " "), icon: "🍽" });
+              if (osm.diet_halal && osm.diet_halal !== "no") facts.push({
+                k: "Halal diet",
+                v: osm.diet_halal === "yes" ? "yes (declared)" : osm.diet_halal === "only" ? "halal only" : osm.diet_halal,
+                icon: "✓",
+              });
+              if (osm.internet_access && osm.internet_access !== "no") facts.push({
+                k: "Wi-Fi",
+                v: osm.internet_access === "wlan" || osm.internet_access === "wifi" ? "free wifi" : osm.internet_access,
+                icon: "📶",
+              });
+              if (osm.wheelchair) facts.push({
+                k: "Wheelchair",
+                v: osm.wheelchair === "yes" ? "accessible" : osm.wheelchair === "limited" ? "limited" : osm.wheelchair,
+                icon: "♿",
+              });
+              if (osm.phone) facts.push({ k: "Phone", v: osm.phone, icon: "📞" });
+              if (osm.email) facts.push({ k: "Email", v: osm.email, icon: "📧" });
+              if (osm.website) facts.push({ k: "Website", v: osm.website, icon: "🔗" });
+
+              if (facts.length === 0) return null;
+              const osmUrl = `https://www.openstreetmap.org/${osm.type || "node"}/${osm.id}`;
+              return (
+                <>
+                  <div className="hr-editorial" />
+                  <section>
+                    <div className="eyebrow mb-2 text-emerald-700 dark:text-emerald-400">
+                      🌍 OpenStreetMap verified
+                    </div>
+                    <h2 className="h-display text-2xl text-islam-950 dark:text-islam-50">
+                      Open Data facts
+                    </h2>
+                    <p className="mt-2 text-sm muted">
+                      Community-edited public data from OpenStreetMap — separate from
+                      Google. Cross-checked by mappers worldwide.
+                    </p>
+                    <dl className="mt-5 grid gap-3 sm:grid-cols-2">
+                      {facts.map((f) => (
+                        <div key={f.k} className="card-editorial p-4">
+                          <dt className="flex items-center gap-2 text-[10px] uppercase tracking-wider muted">
+                            <span aria-hidden="true">{f.icon}</span>
+                            <span>{f.k}</span>
+                          </dt>
+                          <dd className="mt-1 break-words text-sm font-semibold text-islam-900 dark:text-islam-100">
+                            {f.v}
+                          </dd>
+                        </div>
+                      ))}
+                    </dl>
+                    <a
+                      href={osmUrl}
+                      target="_blank"
+                      rel="nofollow noopener"
+                      className="mt-4 inline-block text-xs font-bold text-emerald-800 underline-offset-2 hover:underline dark:text-emerald-300"
+                    >
+                      View on OpenStreetMap →
+                    </a>
+                  </section>
+                </>
+              );
+            })()}
+
             {/* YOUTUBE VIEWER COMMENTS — multi-lang muslim-keyword filtered */}
             {place.youtube_comments && place.youtube_comments.length > 0 && (
               <>

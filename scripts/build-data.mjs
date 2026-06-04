@@ -337,6 +337,23 @@ function normalize(r, niche) {
     youtube_comments: safeJson(r.youtube_comments_json, []),
     youtube_comment_count: num(r.youtube_comment_count),
     has_youtube_comments: bool(r.has_youtube_comments),
+    // OpenStreetMap enrichment (Overpass API)
+    osm: r.osm_id ? {
+      id: r.osm_id,
+      type: r.osm_type || "",
+      opening_hours: r.osm_opening_hours || "",
+      cuisine: r.osm_cuisine || "",
+      phone: r.osm_phone || "",
+      email: r.osm_email || "",
+      website: r.osm_website || "",
+      wheelchair: r.osm_wheelchair || "",
+      internet_access: r.osm_internet_access || "",
+      diet_halal: r.osm_diet_halal || "",
+      amenity: r.osm_amenity || "",
+      religion: r.osm_religion || "",
+      tags_json: r.osm_tags_json || "",
+    } : undefined,
+    has_osm: !!r.osm_id,
   };
 }
 
