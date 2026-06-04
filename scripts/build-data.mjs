@@ -354,6 +354,11 @@ function normalize(r, niche) {
       tags_json: r.osm_tags_json || "",
     } : undefined,
     has_osm: !!r.osm_id,
+    // Wikipedia/Wikidata background
+    wiki_qid: r.wiki_qid || "",
+    wiki_name: r.wiki_name || "",
+    wiki_summaries: safeJson(r.wiki_summaries_json, {}),
+    has_wikipedia: bool(r.has_wikipedia),
   };
 }
 

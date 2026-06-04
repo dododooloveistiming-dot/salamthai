@@ -723,6 +723,79 @@ export default async function PlaceDetailPage({ params }: { params: { lang: Lang
               </>
             )}
 
+            {/* WIKIPEDIA BACKGROUND — Wikidata Q# + multi-lang Wikipedia summaries */}
+            {place.has_wikipedia && place.wiki_summaries && (() => {
+              // Choose best available summary in user's language, fallback to en
+              const wsum = place.wiki_summaries!;
+              const inLang = wsum[lang as Lang];
+              const inEn = wsum.en;
+              const chosen = inLang ?? inEn;
+              if (!chosen || !chosen.extract) return null;
+              const otherLangs = (Object.keys(wsum) as Lang[]).filter(
+                (l) => l !== lang && wsum[l]?.extract
+              );
+              return (
+                <>
+                  <div className="hr-editorial" />
+                  <section>
+                    <div className="eyebrow mb-2 text-sky-700 dark:text-sky-400">
+                      📖 From Wikipedia
+                    </div>
+                    <h2 className="h-display text-2xl text-islam-950 dark:text-islam-50">
+                      Background
+                    </h2>
+                    <div className="mt-5 grid gap-5 sm:grid-cols-[1fr_auto] sm:items-start">
+                      <div>
+                        {chosen.description && (
+                          <p className="text-xs uppercase tracking-wider text-sky-700 dark:text-sky-400">
+                            {chosen.description}
+                          </p>
+                        )}
+                        <p className="mt-2 text-sm leading-relaxed text-ink-800 dark:text-ink-200">
+                          {chosen.extract}
+                        </p>
+                        {chosen.url && (
+                          <a
+                            href={chosen.url}
+                            target="_blank"
+                            rel="noopener"
+                            className="mt-3 inline-block text-xs font-bold text-sky-800 underline-offset-2 hover:underline dark:text-sky-300"
+                          >
+                            Read on Wikipedia →
+                          </a>
+                        )}
+                        {otherLangs.length > 0 && (
+                          <div className="mt-3 flex flex-wrap items-center gap-2 text-[11px] muted">
+                            <span>Also in:</span>
+                            {otherLangs.map((l) => (
+                              <a
+                                key={l}
+                                href={wsum[l]!.url}
+                                target="_blank"
+                                rel="noopener"
+                                className="rounded-full bg-sky-100 px-2 py-0.5 font-bold text-sky-800 hover:bg-sky-200 dark:bg-sky-900/40 dark:text-sky-200"
+                              >
+                                {l.toUpperCase()}
+                              </a>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                      {chosen.thumbnail && (
+                        /* eslint-disable-next-line @next/next/no-img-element */
+                        <img
+                          src={chosen.thumbnail}
+                          alt={place.name}
+                          loading="lazy"
+                          className="hidden h-32 w-32 rounded-2xl object-cover ring-1 ring-sky-200 dark:ring-sky-800 sm:block"
+                        />
+                      )}
+                    </div>
+                  </section>
+                </>
+              );
+            })()}
+
             {/* OPENSTREETMAP — community-edited public data verification */}
             {place.osm && place.osm.id && (() => {
               const osm = place.osm!;

@@ -46,6 +46,7 @@ export function toPlaceLite(p: Place): PlaceLite {
     has_youtube_comments: p.has_youtube_comments,
     youtube_comment_count: p.youtube_comment_count,
     has_osm: p.has_osm,
+    has_wikipedia: p.has_wikipedia,
   };
 }
 

@@ -338,6 +338,11 @@ function PlaceCard({ p, lang, fallbackEmoji: _emoji }: { p: PlaceLite; lang: Lan
               🌍 OSM
             </span>
           )}
+          {p.has_wikipedia && (
+            <span className="rounded-full bg-sky-100 px-2 py-0.5 font-medium text-sky-700 dark:bg-sky-900/40 dark:text-sky-300">
+              📖 Wiki
+            </span>
+          )}
           {p.is_suspected_viral && (
             <span className="rounded-full bg-orange-100 px-2 py-0.5 font-medium text-orange-700 dark:bg-orange-900/40 dark:text-orange-300">
               ⚠ low signal

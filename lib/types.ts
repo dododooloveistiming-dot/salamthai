@@ -109,6 +109,8 @@ export interface PlaceLite {
   youtube_comment_count?: number;
   // OSM verified badge
   has_osm?: boolean;
+  // Wikipedia article exists
+  has_wikipedia?: boolean;
 }
 
 export interface Place {
@@ -173,7 +175,19 @@ export interface Place {
   // OpenStreetMap enrichment — community-edited public data
   osm?: OsmData;
   has_osm?: boolean;
+  // Wikipedia / Wikidata background (35 mosque entities, 20 with summaries)
+  wiki_qid?: string;
+  wiki_name?: string;
+  wiki_summaries?: WikiSummaries;     // {lang: {extract, description, thumbnail, url}}
+  has_wikipedia?: boolean;
 }
+
+export type WikiSummaries = Partial<Record<Lang, {
+  extract: string;
+  description?: string;
+  thumbnail?: string;
+  url?: string;
+}>>;
 
 export interface OsmData {
   id: string;
