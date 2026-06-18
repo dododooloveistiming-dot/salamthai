@@ -14,7 +14,10 @@ import { NICHE_META, nicheName } from "@/lib/types";
 import PlacePhoto from "@/components/PlacePhoto";
 
 export const dynamic = "force-static";
-export const dynamicParams = true;   // unknown pairs render on demand
+// Only the pre-built top-trust pairs exist; any other slug pair 404s at the
+// edge with NO ISR write. Previously `true`, which let crawlers generate
+// ~802² × 6-lang combinations on demand and blew past the ISR-write quota.
+export const dynamicParams = false;
 
 /** Pre-generate the top-trust pair within each (niche, city). Keeps build
  *  size sane: ~34 niches × ~10 cities × 6 langs = ~2K pages. */

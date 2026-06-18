@@ -13,9 +13,11 @@ import { CITIES } from "@/lib/wiki-registry";
 import { bookingSearchUrl, agodaSearchUrl, shouldShowBookingCta } from "@/lib/booking-affiliate";
 import PhotoGallery from "@/components/PhotoGallery";
 
-// Static-with-revalidate: page HTML is pre-rendered for SEO crawlers, but
-// rebuilds every 12h so the embedded daily Prayer Times widget stays fresh.
-export const revalidate = 43200;
+// Fully static: HTML is pre-rendered once at build time. The daily Prayer
+// Times widget now fetches client-side (see components/PrayerTimes), so there's
+// no need for a `revalidate` cycle — which previously triggered a background
+// ISR write on every crawler hit past the window and exhausted Vercel's quota.
+// Place data refreshes on the next deploy (npm run data && deploy).
 
 export function generateStaticParams() {
   const bundle = loadPlaces();

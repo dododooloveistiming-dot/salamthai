@@ -29,7 +29,9 @@ import References, { type Reference } from "@/components/wiki/References";
 import SeeAlso, { type SeeAlsoItem } from "@/components/wiki/SeeAlso";
 import PrayerTimes from "@/components/PrayerTimes";
 
-export const revalidate = 43200;  // refresh prayer-times widget every 12h
+// Fully static — the prayer-times widget fetches client-side, so no `revalidate`
+// churn (was 43200 / 12h, which caused background ISR writes on crawler hits).
+export const dynamic = "force-static";
 
 export function generateStaticParams() {
   const params: Array<{ lang: Lang; city: string }> = [];
