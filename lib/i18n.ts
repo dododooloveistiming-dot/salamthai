@@ -262,13 +262,15 @@ export const T = {
   matches_of: { en: "matches of", ko: "/", th: "จาก", zh: "/", ja: "/", ar: "من" },
 
   // footer
+  // {site} is interpolated with SITE.name at render time (see SiteFooter) so the
+  // shared verifiedthai/salaam template never leaks the wrong brand name.
   footer_blurb: {
-    en: "Verified Thai is an independent directory. Affiliate commissions from booking partners support the site but never influence Trust Scores.",
-    ko: "Verified Thai는 독립 디렉토리입니다. 예약 파트너로부터 수수료를 받지만 신뢰 점수에 영향을 주지 않습니다.",
-    th: "Verified Thai เป็นไดเรกทอรีอิสระ ค่าคอมมิชชั่นจากพาร์ทเนอร์ไม่ส่งผลต่อคะแนน",
-    zh: "Verified Thai 是独立目录。来自预订合作伙伴的佣金支持网站运营，但不影响信任分数。",
-    ja: "Verified Thaiは独立したディレクトリです。提携先からの手数料はサイト運営を支えますが、信頼スコアには影響しません。",
-    ar: "Verified Thai دليل مستقل. عمولات الشركاء تدعم الموقع لكنها لا تؤثر على درجات الثقة.",
+    en: "{site} is an independent directory. Affiliate commissions from booking partners support the site but never influence Trust Scores.",
+    ko: "{site}는 독립 디렉토리입니다. 예약 파트너로부터 수수료를 받지만 신뢰 점수에 영향을 주지 않습니다.",
+    th: "{site} เป็นไดเรกทอรีอิสระ ค่าคอมมิชชั่นจากพาร์ทเนอร์ไม่ส่งผลต่อคะแนน",
+    zh: "{site} 是独立目录。来自预订合作伙伴的佣金支持网站运营，但不影响信任分数。",
+    ja: "{site}は独立したディレクトリです。提携先からの手数料はサイト運営を支えますが、信頼スコアには影響しません。",
+    ar: "{site} دليل مستقل. عمولات الشركاء تدعم الموقع لكنها لا تؤثر على درجات الثقة.",
   },
 } as const;
 

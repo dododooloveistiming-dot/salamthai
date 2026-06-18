@@ -1,16 +1,29 @@
 import type { MetadataRoute } from "next";
 import { SITE, SUPPORTED_LANGS } from "@/lib/i18n";
-import { loadPlaces, getPlacesByNiche } from "@/lib/data";
+import { loadPlaces, getPlacesByNiche, isIndexable } from "@/lib/data";
 import type { Niche } from "@/lib/types";
 
 // Next.js auto-builds the sitemap index (/sitemap.xml) from generateSitemaps()
-// and emits one /sitemap/{id}.xml per entry. Splitting keeps each sub-sitemap
-// under Google's 50K URL limit and serves them as fully static files.
+// and emits one /sitemap/{id}.xml per entry. We split BY TYPE so each file is a
+// clean, separately-crawlable unit and stays well under Google's 50K limit:
+//   id 0  → static pages + niche category pages + wiki
+//   id 1  → niche × city programmatic-SEO pages
+//   id 2+ → place detail pages, one file per language (indexable only)
+//
+// Only routes that actually render are emitted. Old WordPress URLs (/blog-1/,
+// /2834-2/, /wp-login.php, …) are never listed because we only build from the
+// known route table — and they now 404 anyway (see app/[lang] lang guard).
 
-const NICHES: Niche[] = [
-  // original 6
+// Niche category pages (/c/[niche]/) only render for the original 6 niches —
+// the other 28 niches have no standalone category page (they 404), so they must
+// NOT be advertised in the sitemap. They remain reachable via niche × city.
+const CATEGORY_NICHES: Niche[] = [
   "halal-food", "muslim-hotel", "halal-tour", "mosque", "halal-clinic", "halal-beauty",
-  // 28 expanded (v6-v11)
+];
+
+// All 34 niches are eligible for niche × city pages (gated to ≥3 places).
+const ALL_NICHES: Niche[] = [
+  "halal-food", "muslim-hotel", "halal-tour", "mosque", "halal-clinic", "halal-beauty",
   "halal-arab", "halal-bakery", "halal-bbq", "halal-buffet", "halal-burger",
   "halal-cafe", "halal-cooking-class", "halal-grocery", "halal-indian",
   "halal-japanese", "halal-korean", "halal-mediterranean", "halal-pizza",
@@ -20,7 +33,6 @@ const NICHES: Niche[] = [
   "prayer-room", "southern-muslim", "arabic-school",
 ];
 
-// All city slugs that have ≥3 places per niche — generates niche×city URLs.
 const CITY_SLUGS = [
   "bangkok", "phuket", "krabi", "chiang-mai", "hat-yai", "pattaya",
   "hua-hin", "koh-samui", "ko-lanta", "pattani",
@@ -42,12 +54,15 @@ const WIKI_TOPIC_SLUGS = [
   "muslim-wedding-customs-thailand", "turkish-restaurant-history-bangkok",
 ];
 
+const WIKI_NICHE_SLUGS: Niche[] = [
+  "halal-food", "muslim-hotel", "halal-tour", "mosque", "halal-clinic", "halal-beauty",
+];
+
 export const dynamic = "force-static";
 
 export async function generateSitemaps() {
-  // 0: static pages + niche category pages (all languages, with hreflang)
-  // 1..N: per-language place pages
-  return [{ id: 0 }, ...SUPPORTED_LANGS.map((_, i) => ({ id: i + 1 }))];
+  // 0: static + category + wiki | 1: niche×city | 2..N: place pages per language
+  return [{ id: 0 }, { id: 1 }, ...SUPPORTED_LANGS.map((_, i) => ({ id: i + 2 }))];
 }
 
 function langAlternates(buildPath: (l: string) => string) {
@@ -57,20 +72,18 @@ function langAlternates(buildPath: (l: string) => string) {
 }
 
 export default async function sitemap({ id }: { id: number }): Promise<MetadataRoute.Sitemap> {
+  const bundle = loadPlaces();
+  // Real content timestamp from the data build, not the deploy time — gives
+  // crawlers a meaningful lastmod for everything derived from place data.
+  const dataMod = bundle.generated_at ? new Date(bundle.generated_at) : new Date();
   const now = new Date();
 
-  // Chunk 0 — static & category pages
+  // ── id 0: static pages + niche category (6) + wiki ───────────────────────
   if (id === 0) {
     const urls: MetadataRoute.Sitemap = [
-      {
-        url: `${SITE.origin}/`,
-        lastModified: now,
-        changeFrequency: "weekly",
-        priority: 1,
-      },
+      { url: `${SITE.origin}/`, lastModified: now, changeFrequency: "weekly", priority: 1 },
     ];
     for (const lang of SUPPORTED_LANGS) {
-      // Static pages (home, about, why-us, search, how-we-verify, ramadan-2027, wiki)
       for (const p of STATIC_PATHS) {
         const path = p === "" ? "/" : p;
         urls.push({
@@ -81,57 +94,56 @@ export default async function sitemap({ id }: { id: number }): Promise<MetadataR
           alternates: langAlternates((l) => `${SITE.origin}/${l}${path}`),
         });
       }
-      // Niche category pages (34 niches)
-      for (const niche of NICHES) {
+      // Niche category pages — ONLY the 6 that render (others 404), and only
+      // if they have ≥5 indexable places (matches the category page's noindex
+      // rule, so we never advertise a noindex'd page).
+      for (const niche of CATEGORY_NICHES) {
+        if (getPlacesByNiche(niche).filter(isIndexable).length < 5) continue;
         urls.push({
           url: `${SITE.origin}/${lang}/c/${niche}/`,
-          lastModified: now,
+          lastModified: dataMod,
           changeFrequency: "weekly",
           priority: 0.8,
           alternates: langAlternates((l) => `${SITE.origin}/${l}/c/${niche}/`),
         });
       }
-      // Wiki topic pages (20 topics)
       for (const slug of WIKI_TOPIC_SLUGS) {
         urls.push({
           url: `${SITE.origin}/${lang}/wiki/topic/${slug}/`,
-          lastModified: now,
+          lastModified: dataMod,
           changeFrequency: "monthly",
           priority: 0.65,
           alternates: langAlternates((l) => `${SITE.origin}/${l}/wiki/topic/${slug}/`),
         });
       }
-      // Wiki city pages (10 cities)
       for (const slug of CITY_SLUGS) {
         urls.push({
           url: `${SITE.origin}/${lang}/wiki/city/${slug}/`,
-          lastModified: now,
+          lastModified: dataMod,
           changeFrequency: "monthly",
           priority: 0.7,
           alternates: langAlternates((l) => `${SITE.origin}/${l}/wiki/city/${slug}/`),
         });
       }
-      // Wiki niche pages (only the original 6 have curated content)
-      const WIKI_NICHE_SLUGS: Niche[] = [
-        "halal-food", "muslim-hotel", "halal-tour", "mosque", "halal-clinic", "halal-beauty",
-      ];
       for (const niche of WIKI_NICHE_SLUGS) {
         urls.push({
           url: `${SITE.origin}/${lang}/wiki/niche/${niche}/`,
-          lastModified: now,
+          lastModified: dataMod,
           changeFrequency: "monthly",
           priority: 0.65,
           alternates: langAlternates((l) => `${SITE.origin}/${l}/wiki/niche/${niche}/`),
         });
       }
     }
+    return urls;
+  }
 
-    // Niche × city pages (only published if ≥3 places — emit best-effort,
-    // 404s on unpublished combos are fine for sitemap purposes)
-    for (const niche of NICHES) {
+  // ── id 1: niche × city programmatic pages (only published if ≥3 places) ───
+  if (id === 1) {
+    const urls: MetadataRoute.Sitemap = [];
+    for (const niche of ALL_NICHES) {
       const nichePlaces = getPlacesByNiche(niche);
       for (const slug of CITY_SLUGS) {
-        // Quick check: at least 3 places in this niche × city
         const count = nichePlaces.filter((p) =>
           p.city && p.city.toLowerCase().includes(slug.replace(/-/g, " "))
         ).length;
@@ -139,7 +151,7 @@ export default async function sitemap({ id }: { id: number }): Promise<MetadataR
         for (const lang of SUPPORTED_LANGS) {
           urls.push({
             url: `${SITE.origin}/${lang}/c/${niche}/${slug}/`,
-            lastModified: now,
+            lastModified: dataMod,
             changeFrequency: "weekly",
             priority: 0.75,
             alternates: langAlternates((l) => `${SITE.origin}/${l}/c/${niche}/${slug}/`),
@@ -147,26 +159,18 @@ export default async function sitemap({ id }: { id: number }): Promise<MetadataR
         }
       }
     }
-
     return urls;
   }
 
-  // Chunks 1..N — one per language, contains only place pages for that lang
-  const langIndex = id - 1;
+  // ── id 2..N: place detail pages, one file per language (indexable only) ───
+  const langIndex = id - 2;
   const lang = SUPPORTED_LANGS[langIndex];
   if (!lang) return [];
 
-  const bundle = loadPlaces();
-  // Filter low-confidence pages out of sitemap (matches place page noindex
-  // logic — Google shouldn't be asked to crawl pages we don't want indexed).
-  const indexable = bundle.places.filter((p) => {
-    const halalCount = p.halal_signal_count || 0;
-    const lowConf = p.trust_score < 30 || (halalCount === 0 && !p.is_halal_signaled);
-    return !lowConf;
-  });
+  const indexable = bundle.places.filter(isIndexable);
   return indexable.map((p) => ({
     url: `${SITE.origin}/${lang}/place/${p.slug}/`,
-    lastModified: now,
+    lastModified: dataMod,
     changeFrequency: "monthly" as const,
     priority: 0.5,
     alternates: langAlternates((l) => `${SITE.origin}/${l}/place/${p.slug}/`),

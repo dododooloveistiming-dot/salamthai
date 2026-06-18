@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { loadPlaces, getPlaceBySlug } from "@/lib/data";
+import { loadPlaces, getPlaceBySlug, isIndexable } from "@/lib/data";
 import { SITE, SUPPORTED_LANGS, t } from "@/lib/i18n";
 import type { Lang, Place } from "@/lib/types";
 import { NICHE_META, nicheName } from "@/lib/types";
@@ -33,8 +33,10 @@ export function generateStaticParams() {
 /** Low-confidence pages are kept browsable but excluded from search indexing
  *  to protect overall site quality scores. */
 function isLowConfidence(place: Place): boolean {
-  const halalCount = place.halal_signal_count || 0;
-  return place.trust_score < 30 || (halalCount === 0 && !place.is_halal_signaled);
+  // Single source of truth lives in lib/data → isIndexable (Trust ≥ 30 AND
+  // ≥ 2 sources). Previously this read is_halal_signaled/halal_signal_count,
+  // which the data no longer emits, so every page became noindex.
+  return !isIndexable(place);
 }
 
 export async function generateMetadata({ params }: { params: { lang: Lang; slug: string } }): Promise<Metadata> {

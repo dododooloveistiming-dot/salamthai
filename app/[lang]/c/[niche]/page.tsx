@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { loadPlaces, getPlacesByNiche, getPlacesLiteByNiche, loadCommunity } from "@/lib/data";
+import { loadPlaces, getPlacesByNiche, getPlacesLiteByNiche, loadCommunity, isIndexable } from "@/lib/data";
 import { SITE, SUPPORTED_LANGS, t } from "@/lib/i18n";
 import type { Lang, Niche } from "@/lib/types";
 import { NICHE_META, nicheName, nicheTagline } from "@/lib/types";
@@ -15,6 +15,14 @@ const NICHES: Niche[] = [
 ];
 
 export const dynamic = "force-static";
+
+// A category page with too few indexable places is thin content — keep it
+// browsable but noindex it (and drop it from the sitemap) so it can't drag down
+// site-wide quality signals. Tune alongside the sitemap CATEGORY filter.
+const CATEGORY_MIN_INDEXABLE = 5;
+function categoryIsThin(niche: Niche): boolean {
+  return getPlacesByNiche(niche).filter(isIndexable).length < CATEGORY_MIN_INDEXABLE;
+}
 
 export function generateStaticParams() {
   const params: Array<{ lang: Lang; niche: Niche }> = [];
@@ -36,6 +44,9 @@ export async function generateMetadata({ params }: { params: { lang: Lang; niche
   return {
     title,
     description,
+    // Thin categories (e.g. halal-beauty/clinic with <5 indexable places) stay
+    // browsable but are kept out of the index to protect site-wide quality.
+    robots: categoryIsThin(niche) ? { index: false, follow: true } : undefined,
     alternates: {
       canonical: url,
       languages: {

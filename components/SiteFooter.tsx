@@ -41,7 +41,7 @@ export default function SiteFooter({ lang, byNiche }: { lang: Lang; byNiche?: Re
             {SITE.name}
           </div>
           <p className="mt-2 max-w-md text-xs leading-relaxed muted">
-            {t("footer_blurb", lang)}
+            {t("footer_blurb", lang).replace("{site}", SITE.name)}
           </p>
         </div>
 
