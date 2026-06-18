@@ -10,8 +10,19 @@ import CategoryClient from "@/components/CategoryClient";
 import { loadPlaces as _loadAll } from "@/lib/data";
 import PlacePhoto from "@/components/PlacePhoto";
 
+// All 34 niches now get a standalone category page. The original 6 have curated
+// editorial guides (NICHE_GUIDES); the 28 expanded niches fall back to a basic
+// (but non-empty) page built from their place list. Thin ones are noindex'd via
+// categoryIsThin so low-quality pages never enter the index.
 const NICHES: Niche[] = [
   "halal-food", "muslim-hotel", "halal-tour", "mosque", "halal-clinic", "halal-beauty",
+  "halal-arab", "halal-bakery", "halal-bbq", "halal-buffet", "halal-burger",
+  "halal-cafe", "halal-cooking-class", "halal-grocery", "halal-indian",
+  "halal-japanese", "halal-korean", "halal-mediterranean", "halal-pizza",
+  "halal-seafood", "halal-shisha-cafe", "halal-street-food", "halal-thai",
+  "halal-laundry", "halal-pharmacy", "iftar-buffet", "modest-fashion",
+  "muslim-attractions", "muslim-driver", "muslim-friendly-spa", "muslim-wedding",
+  "prayer-room", "southern-muslim", "arabic-school",
 ];
 
 export const dynamic = "force-static";
@@ -22,6 +33,16 @@ export const dynamic = "force-static";
 const CATEGORY_MIN_INDEXABLE = 5;
 function categoryIsThin(niche: Niche): boolean {
   return getPlacesByNiche(niche).filter(isIndexable).length < CATEGORY_MIN_INDEXABLE;
+}
+
+// Intro paragraph for the category page + its meta description. Uses the curated
+// guide when present; otherwise a non-empty fallback so the 28 expanded niches
+// (no curated guide yet) don't render an empty Overview / thin meta description.
+function introText(niche: Niche, lang: Lang): string {
+  const curated = ll((NICHE_GUIDES[niche] ?? EMPTY_GUIDE).intro, lang);
+  if (curated) return curated;
+  const count = getPlacesByNiche(niche).length;
+  return `${nicheName(niche, lang)} in Thailand — ${count} verified, cross-checked listings on ${SITE.name}, scored across independent sources with no paid promotion.`;
 }
 
 export function generateStaticParams() {
@@ -39,8 +60,7 @@ export async function generateMetadata({ params }: { params: { lang: Lang; niche
   if (!NICHES.includes(niche)) return {};
   const url = `${SITE.origin}/${lang}/c/${niche}/`;
   const title = `${nicheName(niche, lang)} in Thailand — ${SITE.name}`;
-  const guide = NICHE_GUIDES[niche] ?? EMPTY_GUIDE;
-  const description = ll(guide.intro, lang).slice(0, 200);
+  const description = introText(niche, lang).slice(0, 200);
   return {
     title,
     description,
@@ -82,15 +102,19 @@ export default function CategoryPage({ params }: { params: { lang: Lang; niche: 
         { "@type": "ListItem", position: 2, name: nicheName(niche, lang), item: `${SITE.origin}/${lang}/c/${niche}/` },
       ],
     },
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      mainEntity: guide.faqs.map((f) => ({
-        "@type": "Question",
-        name: ll(f.q, lang),
-        acceptedAnswer: { "@type": "Answer", text: ll(f.a, lang) },
-      })),
-    },
+    // Only emit FAQPage when there are real FAQs — expanded niches use
+    // EMPTY_GUIDE (no FAQs) and an empty FAQPage is invalid structured data.
+    ...(guide.faqs.length > 0
+      ? [{
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: guide.faqs.map((f) => ({
+            "@type": "Question",
+            name: ll(f.q, lang),
+            acceptedAnswer: { "@type": "Answer", text: ll(f.a, lang) },
+          })),
+        }]
+      : []),
     {
       "@context": "https://schema.org",
       "@type": "Article",
@@ -100,7 +124,7 @@ export default function CategoryPage({ params }: { params: { lang: Lang; niche: 
       author: { "@type": "Organization", name: SITE.name, url: SITE.origin },
       publisher: { "@type": "Organization", name: SITE.name, url: SITE.origin },
       mainEntityOfPage: `${SITE.origin}/${lang}/c/${niche}/`,
-      description: ll(guide.intro, lang).slice(0, 250),
+      description: introText(niche, lang).slice(0, 250),
     },
   ];
 
@@ -146,7 +170,7 @@ export default function CategoryPage({ params }: { params: { lang: Lang; niche: 
               Overview
             </h2>
             <p className={`text-[15px] leading-relaxed ${isArabic ? "font-arabic" : ""}`} dir={isArabic ? "rtl" : "ltr"}>
-              {ll(guide.intro, lang)}
+              {introText(niche, lang)}
             </p>
           </article>
 

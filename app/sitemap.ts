@@ -14,14 +14,9 @@ import type { Niche } from "@/lib/types";
 // /2834-2/, /wp-login.php, …) are never listed because we only build from the
 // known route table — and they now 404 anyway (see app/[lang] lang guard).
 
-// Niche category pages (/c/[niche]/) only render for the original 6 niches —
-// the other 28 niches have no standalone category page (they 404), so they must
-// NOT be advertised in the sitemap. They remain reachable via niche × city.
-const CATEGORY_NICHES: Niche[] = [
-  "halal-food", "muslim-hotel", "halal-tour", "mosque", "halal-clinic", "halal-beauty",
-];
-
-// All 34 niches are eligible for niche × city pages (gated to ≥3 places).
+// All 34 niches now have a standalone category page (/c/[niche]/) and are
+// eligible for niche × city pages. The sitemap still skips any category with
+// <5 indexable places (matches the page's noindex rule).
 const ALL_NICHES: Niche[] = [
   "halal-food", "muslim-hotel", "halal-tour", "mosque", "halal-clinic", "halal-beauty",
   "halal-arab", "halal-bakery", "halal-bbq", "halal-buffet", "halal-burger",
@@ -94,10 +89,10 @@ export default async function sitemap({ id }: { id: number }): Promise<MetadataR
           alternates: langAlternates((l) => `${SITE.origin}/${l}${path}`),
         });
       }
-      // Niche category pages — ONLY the 6 that render (others 404), and only
-      // if they have ≥5 indexable places (matches the category page's noindex
-      // rule, so we never advertise a noindex'd page).
-      for (const niche of CATEGORY_NICHES) {
+      // Niche category pages — all 34 render now, but only list those with ≥5
+      // indexable places (matches the category page's noindex rule, so we never
+      // advertise a noindex'd page).
+      for (const niche of ALL_NICHES) {
         if (getPlacesByNiche(niche).filter(isIndexable).length < 5) continue;
         urls.push({
           url: `${SITE.origin}/${lang}/c/${niche}/`,
